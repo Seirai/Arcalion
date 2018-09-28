@@ -1,16 +1,33 @@
 /**
 *  @author       Seilai Zhao <seilaizh@gmail.com>
-*  testScene.js
+*  gameScene.js
 *  Currently the main scene in which development of core game mechanics and gameplay will happen.
 *
 */
 
 //Importing controls from main for use in this scene.
-import {controls as oldControls} from '../main';
+
+import {Player} from '../objects/Player';
 
 import {Mob} from '../objects/Mob';
 
-export class testScene extends Phaser.Scene {
+import {Button, Menu} from "../systems/ui";
+
+// import "phaser";
+
+// import {initiateCombat} from '../systems/Combat';
+
+export class gameScene extends Phaser.Scene {
+
+  constructor()
+  {
+    super({ key : "gameScene" });
+  }
+
+  init()
+  {
+
+  }
 
   //Loading assets.
   preload() {
@@ -21,6 +38,8 @@ export class testScene extends Phaser.Scene {
 
   //Rendering assets.
   create() {
+    this.sound.play("prologueTheme");
+
     map = this.make.tilemap({ key: "map" });
 
     // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
@@ -32,8 +51,6 @@ export class testScene extends Phaser.Scene {
     const worldLayer = map.createStaticLayer("AboveTurf", tileset, 0, 0);
     const aboveLayer = map.createStaticLayer("AbovePlayer", tileset, 0, 0);
 
-
-
     aboveLayer.setDepth(10);
 
     //Adding spawnpoint
@@ -44,25 +61,38 @@ export class testScene extends Phaser.Scene {
     worldLayer.setCollisionByProperty({ collides: true });
 
     //Debug collision
-    const debugGraphics = this.add.graphics().setAlpha(0.75);
-    worldLayer.renderDebug(debugGraphics, {
-      tileColor: null,
-      collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255),
-      faceColor: new Phaser.Display.Color(40, 39, 37, 255)
-    });
+    // const debugGraphics = this.add.graphics().setAlpha(0.75);
+    // worldLayer.renderDebug(debugGraphics, {
+    //   tileColor: null,
+    //   collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255),
+    //   faceColor: new Phaser.Display.Color(40, 39, 37, 255)
+    // });
 
 
     cursors = this.input.keyboard.createCursorKeys();
 
-    player = this.add.existing(new Mob(this, spawnPoint.x, spawnPoint.y, "atlas", "misa-front", map.tileWidth, 5));
-    player = this.physics.add.existing(player);
+    mob = this.add.existing(new Mob(this, spawnPoint.x + 64, spawnPoint.y + 64, "atlas", "misa-front", map.tileWidth, 5));
+    mob = this.physics.add.existing(mob);
+    mob.body.setSize(32, 40);
+    mob.body.setOffset(0, 24);
+    mob.key = "testmob";
 
-//    player = this.physics.add.existing(new Mob(this, spawnPoint.x, spawnPoint.y, "atlas", "misa-front",
-//     map.tileWidth, 6));
-    player.setSize(32, 40);
+    // console.log(mob);
+    // mob.setInteractive();
+    // mob.on("pointerdown", this.openMobMenu);
+
+
+
+    this.physics.add.collider(mob, worldLayer);
+
+    player = this.add.existing(new Player(this, spawnPoint.x, spawnPoint.y, "atlas", "misa-front", map.tileWidth, 5));
+    player = this.physics.add.existing(player);
+    player.cursors = cursors;
+    player.map = map;
+    player.body.setSize(32, 40);
     player.key = "player";
+    player.body.setOffset(0, 24);
     this.physics.add.collider(player, worldLayer);
-    console.log(player);
 
     const anims = this.anims;
     anims.create({
@@ -94,39 +124,23 @@ export class testScene extends Phaser.Scene {
     camera.startFollow(player);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    this.add
-    .text(16, 16, "Arrow keys to move", {
-      font: "18px monospace",
-      fill: "#ffffff",
-      padding: { x: 20, y: 10 },
-      backgroundColor: "#000000"
-    })
-    .setScrollFactor(0)
-    .setDepth(30);
-
-    console.log(this.sys.updateList);
     this.sys.updateList.add(player);
+    this.sys.updateList.add(mob);
   }
 
   //Checking for input and changes.
   update(time, delta) {
-    if(player.moveIntention == false)
-    {
-      if(cursors.left.isDown) player.move("left");
-      else if(cursors.right.isDown) player.move("right");
-      else if(cursors.up.isDown) player.move("up");
-      else if(cursors.down.isDown) player.move("down");
-      //player.moveIntention = true;
-    }
-    if(player.isMoving() && !cursors.isDown)
-      player.update();
+    player.update(); //Catches player controls
+
   }
+
+
 };
 
 //Defining global variables in module to be hoisted.
 let destination = new Phaser.Math.Vector2;
-let controls = oldControls;
 let player;
+let mob;
 let cursors;
 let map;
 const speed = 175;

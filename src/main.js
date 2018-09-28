@@ -1,22 +1,20 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//    Project Arcalion -- Permadeath RPG Sandbox
-//  A game with a progression system that can switch between a traditional RPG and one that bases itself on
-//  EXP earned through RP. For more information, check the doc:
-//
-//  Coder: Seirai
-//
-//    main.js
-//  App entry point.
-//////
+/**
+*  @author       Seilai Zhao <seilaizh@gmail.com>
+*  main.js
+*  Entry point importing all scenes and configuring gameConfig.
+*
+*/
 
 import 'phaser';
 
-import { testScene } from './scenes/testScene';
-
+import { titleScene } from "./scenes/titleScene";
+import { gameScene } from "./scenes/gameScene";
 const gameConfig = {
-  width: 680,
-  height: 400,
-  scene: testScene,
+  type: Phaser.AUTO,
+  width: 1024,
+  height: 768,
+  disableContextMenu: true,
+  scene: [ titleScene, gameScene ],
 
   //Enabling physics
   physics: {
@@ -27,4 +25,5 @@ const gameConfig = {
   }
 };
 let controls;
-new Phaser.Game(gameConfig);
+let game = new Phaser.Game(gameConfig);
+export {game};

@@ -1,0 +1,75 @@
+{
+"frames": {
+	"splash": {
+		"frame": {"x":0, "y":0, "w":301, "h":128},
+		"spriteSourceSize": {"x":0,"y":0,"w":301,"h":128},
+		"sourceSize": {"w":301,"h":128}
+	},
+	"ui_bars": {
+		"frame": {"x":0, "y":129, "w":200, "h":64},
+		"spriteSourceSize": {"x":0,"y":0,"w":200,"h":64},
+		"sourceSize": {"w":200,"h":64}
+	},
+	"ui_button": {
+		"frame": {"x":121, "y":243, "w":71, "h":26},
+		"spriteSourceSize": {"x":0,"y":0,"w":71,"h":26},
+		"sourceSize": {"w":71,"h":26}
+	},
+	"ui_cancel": {
+		"frame": {"x":302, "y":66, "w":25, "h":32},
+		"spriteSourceSize": {"x":0,"y":0,"w":25,"h":32},
+		"sourceSize": {"w":25,"h":32}
+	},
+	"ui_confirm": {
+		"frame": {"x":121, "y":302, "w":120, "h":31},
+		"spriteSourceSize": {"x":0,"y":0,"w":120,"h":31},
+		"sourceSize": {"w":120,"h":31}
+	},
+	"ui_health": {
+		"frame": {"x":206, "y":334, "w":102, "h":8},
+		"spriteSourceSize": {"x":0,"y":0,"w":102,"h":8},
+		"sourceSize": {"w":102,"h":8}
+	},
+	"ui_inventory": {
+		"frame": {"x":201, "y":129, "w":120, "h":172},
+		"spriteSourceSize": {"x":0,"y":0,"w":120,"h":172},
+		"sourceSize": {"w":120,"h":172}
+	},
+	"ui_mana": {
+		"frame": {"x":103, "y":334, "w":102, "h":8},
+		"spriteSourceSize": {"x":0,"y":0,"w":102,"h":8},
+		"sourceSize": {"w":102,"h":8}
+	},
+	"ui_misc": {
+		"frame": {"x":302, "y":0, "w":25, "h":32},
+		"spriteSourceSize": {"x":0,"y":0,"w":25,"h":32},
+		"sourceSize": {"w":25,"h":32}
+	},
+	"ui_player": {
+		"frame": {"x":0, "y":243, "w":120, "h":72},
+		"spriteSourceSize": {"x":0,"y":0,"w":120,"h":72},
+		"sourceSize": {"w":120,"h":72}
+	},
+	"ui_slots": {
+		"frame": {"x":0, "y":194, "w":180, "h":48},
+		"spriteSourceSize": {"x":0,"y":0,"w":180,"h":48},
+		"sourceSize": {"w":180,"h":48}
+	},
+	"ui_stamina": {
+		"frame": {"x":0, "y":334, "w":102, "h":8},
+		"spriteSourceSize": {"x":0,"y":0,"w":102,"h":8},
+		"sourceSize": {"w":102,"h":8}
+	},
+	"ui_start": {
+		"frame": {"x":302, "y":33, "w":25, "h":32},
+		"spriteSourceSize": {"x":0,"y":0,"w":25,"h":32},
+		"sourceSize": {"w":25,"h":32}
+	}
+
+},
+"meta": {
+	"image": "sprites",
+	"size": {"w": 328, "h": 343},
+	"scale": "1"
+}
+}
