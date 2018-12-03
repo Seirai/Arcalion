@@ -1,55 +1,46 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const webpack = require('webpack');
-
 module.exports = {
-	entry: {
-		app: './src/main.js',
-		'production-dependencies': ['phaser']
-	},
+  entry: './src/main.js',
+  target: 'web',
+  mode: 'development',
+  output: 
+  {
+    filename: 'client-bundle.js',
+    path: path.resolve(__dirname, 'build'),
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
+  },
 
-	output: {
-		path: path.resolve(__dirname, 'build'),
-		filename: 'app.bundle.js'
-	},
-
-	module: {
-		rules: [
-			{
-			test: /\.js$/,
-			include: path.resolve(__dirname, 'src/'),
-			use: {
-				loader: 'babel-loader',
-				options: {
-					presets: ['env']
-					}
-				}
-			}
-		]
-	},
-
-	plugins: [
-		new CopyWebpackPlugin([
-			{
-				from: path.resolve(__dirname, 'index.html'),
-				to: path.resolve(__dirname, 'build')
-			},
-			{
-				from: path.resolve(__dirname, 'assets', '**', '*'),
-				to: path.resolve(__dirname, 'build')
-			}
-		]),
-		new webpack.DefinePlugin({
-			'typeof CANVAS_RENDERER': JSON.stringify(true),
-			'typeof WEBGL_RENDERER': JSON.stringify(true),
-		}),
-		new webpack.optimize.CommonsChunkPlugin({
-			name : 'production-dependencies',
-			filename: 'production-dependencies.bundle.js'
-		})
-	],
-
-	devServer: {
-		contentBase: path.resolve(__dirname, 'build'),
-	}
+  module:
+  {
+    rules: [
+      {
+        test: /\.m?js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      }
+    ]
+  },
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, 'index.html'),
+        to: path.resolve(__dirname, 'build')
+      },
+      {
+        from: path.resolve(__dirname, 'assets', '**', '*'),
+        to: path.resolve(__dirname, 'build')
+      }
+    ]),
+  ]
 };
+  
