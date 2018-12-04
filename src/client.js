@@ -1,14 +1,15 @@
 /**
-*  @author       Seirai <seilaizh@gmail.com>
+*  @author       Seilai Zhao <seilaizh@gmail.com>
 *  main.js
 *  Entry point importing all scenes and configuring gameConfig.
 *
 */
 
 import 'phaser';
+import io from 'socket.io-client';
+import { titleScene } from './scenes/titleScene';
+import { gameScene } from './scenes/gameScene';
 
-import { titleScene } from "./scenes/titleScene";
-import { gameScene } from "./scenes/gameScene";
 const gameConfig = {
   type: Phaser.AUTO,
   width: 1024,
@@ -24,6 +25,4 @@ const gameConfig = {
     }
   }
 };
-let controls;
 let game = new Phaser.Game(gameConfig);
-export {game};

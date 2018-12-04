@@ -1,21 +1,14 @@
 /**
-*  @author       Seilai Zhao <seilaizh@gmail.com>
+*  @author       Seirai <seilaizh@gmail.com>
 *  gameScene.js
 *  Currently the main scene in which development of core game mechanics and gameplay will happen.
 *
 */
 
-//Importing controls from main for use in this scene.
-
 import {Player} from '../objects/Player';
-
 import {Mob} from '../objects/Mob';
-
 import {Button, Menu} from "../systems/ui";
-
-// import "phaser";
-
-// import {initiateCombat} from '../systems/Combat';
+import io from 'socket.io-client';
 
 export class gameScene extends Phaser.Scene {
 
@@ -38,6 +31,8 @@ export class gameScene extends Phaser.Scene {
 
   //Rendering assets.
   create() {
+    this.socket = io.connect('http://localhost:8081');
+
     this.sound.play("prologueTheme");
 
     map = this.make.tilemap({ key: "map" });
@@ -56,27 +51,14 @@ export class gameScene extends Phaser.Scene {
     //Adding spawnpoint
     const spawnPoint = map.findObject("Object", obj => obj.name === "spawnPoint");
 
-
-    //Setting collision property to everything in the layer AboveTurf
-    worldLayer.setCollisionByProperty({ collides: true });
-
-    //Debug collision
-    // const debugGraphics = this.add.graphics().setAlpha(0.75);
-    // worldLayer.renderDebug(debugGraphics, {
-    //   tileColor: null,
-    //   collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255),
-    //   faceColor: new Phaser.Display.Color(40, 39, 37, 255)
-    // });
-
-
     cursors = this.input.keyboard.createCursorKeys();
-
+/*
     mob = this.add.existing(new Mob(this, spawnPoint.x + 64, spawnPoint.y + 64, "atlas", "misa-front", map.tileWidth, 5));
     mob = this.physics.add.existing(mob);
     mob.body.setSize(32, 40);
     mob.body.setOffset(0, 24);
     mob.key = "testmob";
-
+*/
     // console.log(mob);
     // mob.setInteractive();
     // mob.on("pointerdown", this.openMobMenu);

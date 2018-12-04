@@ -5,7 +5,6 @@
 *
 */
 
-import {controls} from "../main";
 
 import {Button, Menu} from "../systems/ui";
 

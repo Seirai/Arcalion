@@ -4,15 +4,18 @@ const webpack = require('webpack');
 
 module.exports = {
   target: 'web',
-  mode: 'development',
   entry: {
     app: ['./src/client.js']
   },
   output: {
+    path: path.resolve(__dirname, './build'),
     filename: 'client-bundle.js',
-    path: path.resolve(__dirname, 'build'),
   },
-  
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
+  },
   devServer: {
     contentBase: './build'
   },
