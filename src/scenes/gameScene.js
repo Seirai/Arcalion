@@ -32,10 +32,14 @@ export class gameScene extends Phaser.Scene {
   //Rendering assets.
   create() {
 <<<<<<< HEAD
+<<<<<<< HEAD
     this.socket = io.connect('http://localhost:8081');
 =======
     this.socket = io();
 >>>>>>> 1ad4a55... Pushing for testing on main rig
+=======
+    this.socket = io.connect('http://localhost:8081');
+>>>>>>> 7c401e8... Merge-commit
 
     this.sound.play("prologueTheme");
 
