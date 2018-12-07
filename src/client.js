@@ -6,10 +6,16 @@
 */
 
 import 'phaser';
+<<<<<<< HEAD
 import io from 'socket.io-client';
 import { titleScene } from './scenes/titleScene';
 import { gameScene } from './scenes/gameScene';
 
+=======
+
+import { titleScene } from './scenes/titleScene';
+import { gameScene } from './scenes/gameScene';
+>>>>>>> 8fd2498... Imolementing matter-js headless server
 const gameConfig = {
   type: Phaser.AUTO,
   width: 1024,
