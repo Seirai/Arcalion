@@ -31,15 +31,7 @@ export class gameScene extends Phaser.Scene {
 
   //Rendering assets.
   create() {
-<<<<<<< HEAD
-<<<<<<< HEAD
     this.socket = io.connect('http://localhost:8081');
-=======
-    this.socket = io();
->>>>>>> 1ad4a55... Pushing for testing on main rig
-=======
-    this.socket = io.connect('http://localhost:8081');
->>>>>>> 7c401e8... Merge-commit
 
     this.sound.play("prologueTheme");
 
@@ -73,7 +65,6 @@ export class gameScene extends Phaser.Scene {
 
 
 
-    this.physics.add.collider(mob, worldLayer);
 
     player = this.add.existing(new Player(this, spawnPoint.x, spawnPoint.y, "atlas", "misa-front", map.tileWidth, 5));
     player = this.physics.add.existing(player);
@@ -115,7 +106,6 @@ export class gameScene extends Phaser.Scene {
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     this.sys.updateList.add(player);
-    this.sys.updateList.add(mob);
   }
 
   //Checking for input and changes.
