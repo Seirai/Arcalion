@@ -19,13 +19,14 @@ export class gameScene extends Phaser.Scene {
 
   init()
   {
-
+    this.game.renderer.resize(384, 384, 1.0);
   }
 
   //Loading assets.
   preload() {
-    this.load.image("tiles", "../assets/tilesets/tuxmon-sample-32px.png");
-    this.load.tilemapTiledJSON("map", "../assets/maps/sample_map.json");
+    this.load.image('tile1', '../assets/tilesets/grassdirtstonemin.png');
+    this.load.image('tile2', '../assets/tilesets/grassmountainmin.png');
+    this.load.tilemapTiledJSON("map", "../assets/maps/testmap1.json");
     this.load.atlas("atlas", "../assets/atlas/atlas.png", "../assets/atlas/atlas.json");
   }
 
@@ -39,17 +40,16 @@ export class gameScene extends Phaser.Scene {
 
     // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
     // Phaser's cache (i.e. the name you used in preload)
-    const tileset = map.addTilesetImage("tuxmon-sample-32px", "tiles");
+    let tileset = [map.addTilesetImage('grassdirtstone1', 'tile1')];
+    tileset.push(map.addTilesetImage('grassmountain1', 'tile2'));
 
     // Parameters: layer name (or index) from Tiled, tileset, x, y
-    const belowLayer = map.createStaticLayer("Turf", tileset, 0, 0);
-    const worldLayer = map.createStaticLayer("AboveTurf", tileset, 0, 0);
-    const aboveLayer = map.createStaticLayer("AbovePlayer", tileset, 0, 0);
-
-    aboveLayer.setDepth(10);
+    const tileLayer1 = map.createStaticLayer(0, tileset, 0, 0);
+    const tileLayer2 = map.createStaticLayer(1, tileset, 0, 0);
+    const tileLayer3 = map.createStaticLayer(2, tileset, 0, 0);
 
     //Adding spawnpoint
-    const spawnPoint = map.findObject("Object", obj => obj.name === "spawnPoint");
+//    const spawnPoint = map.findObject("Object", obj => obj.name === "spawnPoint");
 
     cursors = this.input.keyboard.createCursorKeys();
 /*
@@ -63,17 +63,17 @@ export class gameScene extends Phaser.Scene {
     // mob.setInteractive();
     // mob.on("pointerdown", this.openMobMenu);
 
+    let players = [];
 
 
 
-    player = this.add.existing(new Player(this, spawnPoint.x, spawnPoint.y, "atlas", "misa-front", map.tileWidth, 5));
+    player = this.add.existing(new Player(this, 32, 32, "atlas", "misa-front", map.tileWidth, 5));
     player = this.physics.add.existing(player);
     player.cursors = cursors;
     player.map = map;
     player.body.setSize(32, 40);
     player.key = "player";
     player.body.setOffset(0, 24);
-    this.physics.add.collider(player, worldLayer);
 
     const anims = this.anims;
     anims.create({
