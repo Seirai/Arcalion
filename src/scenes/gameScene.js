@@ -33,7 +33,7 @@ export class gameScene extends Phaser.Scene {
   //Rendering assets.
   create() {
     this.socket = io.connect('http://localhost:8081');
-
+//    this.socket = io.connect('https://arcalion-server.herokuapp.com');
 
     this.sound.play("prologueTheme");
 
@@ -97,6 +97,8 @@ export class gameScene extends Phaser.Scene {
         this.sys.updateList.add(newPlayer);
         players.push(newPlayer);
       });
+
+    //Block of anims created for mob/players
     const anims = this.anims;
     anims.create({
       key: "misa-left-walk",
