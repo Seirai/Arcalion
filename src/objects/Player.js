@@ -22,9 +22,9 @@ export class Player extends Mob {
  *
  * @return {Phaser.GameObjects.Sprite.Player}
  */
-  constructor (scene, x, y, texture, frame, maptileWidth, speed)
+  constructor (scene, x, y, texture, frame, maptileWidth, speed, id)
   {
-    super(scene, x, y, texture, frame, maptileWidth, speed);
+    super(scene, x, y, texture, frame, maptileWidth, speed, id);
     this.selected = null; //The object that the player has selected
   }
 

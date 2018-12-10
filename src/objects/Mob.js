@@ -22,9 +22,10 @@ export class Mob extends Phaser.GameObjects.Sprite {
  *
  * @return {Phaser.GameObjects.Sprite.Mob}
  */
-  constructor (scene, x, y, texture, frame, maptileWidth, speed)
+  constructor (scene, x, y, texture, frame, maptileWidth, speed, id)
   {
     super(scene, x, y, texture, frame);
+    this.id = id;
     this.moveIntention = false;
     this.mapTileWidth = maptileWidth;
     this.prevPos;  //previous position

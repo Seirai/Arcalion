@@ -32,7 +32,7 @@ export class gameScene extends Phaser.Scene {
 
   //Rendering assets.
   create() {
-    this.socket = io.connect('http://localhost:8081');
+    this.socket = io.connect('https://arcalion-server.herokuapp.com');
 
     this.sound.play("prologueTheme");
 
@@ -48,33 +48,45 @@ export class gameScene extends Phaser.Scene {
     const tileLayer2 = map.createStaticLayer(1, tileset, 0, 0);
     const tileLayer3 = map.createStaticLayer(2, tileset, 0, 0);
 
-    //Adding spawnpoint
-//    const spawnPoint = map.findObject("Object", obj => obj.name === "spawnPoint");
 
     cursors = this.input.keyboard.createCursorKeys();
-/*
-    mob = this.add.existing(new Mob(this, spawnPoint.x + 64, spawnPoint.y + 64, "atlas", "misa-front", map.tileWidth, 5));
-    mob = this.physics.add.existing(mob);
-    mob.body.setSize(32, 40);
-    mob.body.setOffset(0, 24);
-    mob.key = "testmob";
-*/
-    // console.log(mob);
-    // mob.setInteractive();
-    // mob.on("pointerdown", this.openMobMenu);
 
     let players = [];
+    this.socket.on('onLogin', splayers => //server player array
+      {
+        splayers.forEach(elem =>
+          {
+            if(elem.id != this.socket.id)
+            {
+              let newPlayer = this.add.existing(new Mob(this, elem.x, elem.y, 'atlas', 'misa-front', map.tileWidth, 2, elem.id));
+              this.physics.add.existing(newPlayer);
+              newPlayer.body.setSize(32, 40);
+              newPlayer.body.setOffset(0, 24);
+              this.sys.updateList.add(newPlayer);
+              players.push(newPlayer);
+            }
+            else
+            { 
+              player = this.add.existing(new Player(this, elem.x, elem.y, 'atlas', 'misa-front', map.tileWidth, 2, elem.id));
+              this.physics.add.existing(newPlayer);
+              newPlayer.body.setSize(32, 40);
+              newPlayer.body.setOffset(0, 24);
+              players.push(newPlayer);
+              this.sys.updateList.add(newPlayer);
+              camera.startFollow(player);
+              newPlayer.cursors = cursors;
+              newPlayer.map = map;
+              newPlayer.key = 'player';
+            }
+        });
+      });
 
-
-
-    player = this.add.existing(new Player(this, 32, 32, "atlas", "misa-front", map.tileWidth, 5));
-    player = this.physics.add.existing(player);
-    player.cursors = cursors;
-    player.map = map;
-    player.body.setSize(32, 40);
-    player.key = "player";
-    player.body.setOffset(0, 24);
-
+    this.socket.on('playerDisconnect', removeIndex =>
+      {
+        console.log(removeIndex);
+        //players[removeIndex].destroy();
+        //players.splice(removeIndex, 1);
+      });
     const anims = this.anims;
     anims.create({
       key: "misa-left-walk",
@@ -102,15 +114,13 @@ export class gameScene extends Phaser.Scene {
     });
 
     const camera = this.cameras.main;
-    camera.startFollow(player);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    this.sys.updateList.add(player);
   }
 
   //Checking for input and changes.
   update(time, delta) {
-    player.update(); //Catches player controls
+    if(player!=null)player.update(); //Catches player controls
 
   }
 
