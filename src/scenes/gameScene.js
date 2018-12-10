@@ -32,7 +32,8 @@ export class gameScene extends Phaser.Scene {
 
   //Rendering assets.
   create() {
-    this.socket = io.connect('https://arcalion-server.herokuapp.com');
+    this.socket = io.connect('http://localhost:8081');
+
 
     this.sound.play("prologueTheme");
 
@@ -68,24 +69,33 @@ export class gameScene extends Phaser.Scene {
             else
             { 
               player = this.add.existing(new Player(this, elem.x, elem.y, 'atlas', 'misa-front', map.tileWidth, 2, elem.id));
-              this.physics.add.existing(newPlayer);
-              newPlayer.body.setSize(32, 40);
-              newPlayer.body.setOffset(0, 24);
-              players.push(newPlayer);
-              this.sys.updateList.add(newPlayer);
+              this.physics.add.existing(player);
+              player.body.setSize(32, 40);
+              player.body.setOffset(0, 24);
+              players.push(player);
+              this.sys.updateList.add(player);
               camera.startFollow(player);
-              newPlayer.cursors = cursors;
-              newPlayer.map = map;
-              newPlayer.key = 'player';
+              player.cursors = cursors;
+              player.map = map;
+              player.key = 'player';
             }
         });
       });
 
     this.socket.on('playerDisconnect', removeIndex =>
       {
-        console.log(removeIndex);
-        //players[removeIndex].destroy();
-        //players.splice(removeIndex, 1);
+        players[removeIndex].destroy();
+        players.splice(removeIndex, 1);
+      });
+
+    this.socket.on('playerLogin', elem =>
+      { 
+        let newPlayer = this.add.existing(new Mob(this, elem.x, elem.y, 'atlas', 'misa-front', map.tileWidth, 2, elem.id));
+        this.physics.add.existing(newPlayer);
+        newPlayer.body.setSize(32, 40);
+        newPlayer.body.setOffset(0, 24);
+        this.sys.updateList.add(newPlayer);
+        players.push(newPlayer);
       });
     const anims = this.anims;
     anims.create({
