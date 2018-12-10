@@ -1,8 +1,9 @@
 {
-  "name": "webpacktest",
+  "name": "Arcalion ",
   "version": "1.0.0",
-  "description": "A boilerplate for bundling a phaser3 client and headless server with webpack.",
-  "main": "index.js",
+  "description": "Phaser 3 based online roleplaying game.",
+  "main": "client.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --open",
@@ -10,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Seirai/headless-phaser3-webpack-boilerplate.git"
+    "url": "https://github.com/Seirai/Arcalion"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Seirai/headless-phaser3-webpack-boilerplate/issues"
+    "url": "https://github.com/Seirai/Arcalion/issues"
   },
-  "homepage": "https://github.com/Seirai/headless-phaser3-webpack-boilerplate#readme",
+  "homepage": "https://github.com/Seirai/Arcalion#readme",
   "devDependencies": {
     "@babel/core": "^7.1.6",
     "@babel/preset-env": "^7.1.6",
@@ -31,11 +32,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
-    "canvas": "^2.1.0",
-    "datauri": "^1.1.0",
     "express": "^4.16.4",
-    "jsdom": "^13.0.0",
-    "matter-js": "^0.14.2",
     "phaser": "^3.15.1",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0"
