@@ -1,5 +1,5 @@
 /**
-*  @author       Seilai Zhao <seilaizh@gmail.com>
+*  @author       Seirai <seilaizh@gmail.com>
 *  main.js
 *  Entry point importing all scenes and configuring gameConfig.
 *

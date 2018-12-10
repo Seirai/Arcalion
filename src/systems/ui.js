@@ -1,5 +1,5 @@
 /**
- *  @author      Seilai Zhao <seilaizh@gmail.com>
+ *  @author      Seirai <seilaizh@gmail.com>
  *  ui.js
  *  A base class for drop-down menus.
  */

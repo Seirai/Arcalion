@@ -1,5 +1,5 @@
 /**
- *  @author      Seilai Zhao <seilaizh@gmail.com>
+ *  @author      Seirai <seilaizh@gmail.com>
  *  Mob.js
  *  A definition of the Mob gameobject that encompasses all monsters and Mobs.
  */

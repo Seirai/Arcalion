@@ -1,5 +1,5 @@
 /**
- *  @author      Seilai Zhao <seilaizh@gmail.com>
+ *  @author      Seirai <seilaizh@gmail.com>
  *  Player.js
  *  A definition of the Player gameobject that encompasses all monsters and players.
  */

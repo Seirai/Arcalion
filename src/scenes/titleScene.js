@@ -1,5 +1,5 @@
 /**
-*  @author       Seilai Zhao <seilaizh@gmail.com>
+*  @author       Seirai <seilaizh@gmail.com>
 *  titleScene.js
 *  The Title Scene I will use to test my menu class and UI.
 *

@@ -1,5 +1,5 @@
 /**
- *  @author      Seilai Zhao <seilaizh@gmail.com>
+ *  @author      Seirai <seilaizh@gmail.com>
  *  Combat.js
  *  We'll be implementing the combat system here.
  */
