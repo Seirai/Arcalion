@@ -1,0 +1,90 @@
+{
+"frames": {
+	"testwalkeast_000": {
+		"frame": {"x":119, "y":47, "w":15, "h":46},
+		"spriteSourceSize": {"x":16,"y":1,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalkeast_001": {
+		"frame": {"x":0, "y":46, "w":25, "h":45},
+		"spriteSourceSize": {"x":12,"y":2,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalkeast_002": {
+		"frame": {"x":119, "y":47, "w":15, "h":46},
+		"spriteSourceSize": {"x":16,"y":1,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalkeast_003": {
+		"frame": {"x":26, "y":0, "w":24, "h":44},
+		"spriteSourceSize": {"x":12,"y":2,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalknorth_000": {
+		"frame": {"x":51, "y":47, "w":22, "h":46},
+		"spriteSourceSize": {"x":13,"y":1,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalknorth_001": {
+		"frame": {"x":74, "y":47, "w":22, "h":46},
+		"spriteSourceSize": {"x":13,"y":2,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalknorth_002": {
+		"frame": {"x":51, "y":47, "w":22, "h":46},
+		"spriteSourceSize": {"x":13,"y":1,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalknorth_003": {
+		"frame": {"x":74, "y":0, "w":22, "h":46},
+		"spriteSourceSize": {"x":13,"y":2,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalksouth_000": {
+		"frame": {"x":51, "y":0, "w":22, "h":46},
+		"spriteSourceSize": {"x":13,"y":1,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalksouth_001": {
+		"frame": {"x":97, "y":0, "w":21, "h":46},
+		"spriteSourceSize": {"x":14,"y":2,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalksouth_002": {
+		"frame": {"x":51, "y":0, "w":22, "h":46},
+		"spriteSourceSize": {"x":13,"y":1,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalksouth_003": {
+		"frame": {"x":97, "y":47, "w":21, "h":46},
+		"spriteSourceSize": {"x":13,"y":2,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalkwest_000": {
+		"frame": {"x":119, "y":0, "w":15, "h":46},
+		"spriteSourceSize": {"x":17,"y":1,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalkwest_001": {
+		"frame": {"x":0, "y":0, "w":25, "h":45},
+		"spriteSourceSize": {"x":11,"y":2,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalkwest_002": {
+		"frame": {"x":119, "y":0, "w":15, "h":46},
+		"spriteSourceSize": {"x":17,"y":1,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	},
+	"testwalkwest_003": {
+		"frame": {"x":26, "y":45, "w":24, "h":44},
+		"spriteSourceSize": {"x":12,"y":2,"w":48,"h":48},
+		"sourceSize": {"w":48,"h":48}
+	}
+
+},
+"meta": {
+	"image": "dgraymanjr.png",
+	"size": {"w": 135, "h": 94},
+	"scale": "1"
+}
+}

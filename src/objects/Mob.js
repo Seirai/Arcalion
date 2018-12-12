@@ -167,25 +167,25 @@ export class Mob extends Phaser.GameObjects.Sprite {
     switch(dir)
     {
       case "up":
-      this.anims.play("misa-back-walk", true);
+      this.anims.play("testwalknorth_", true);
       this.body.setVelocityY(-trueSpd);
       this.destination.y = (Math.round((curPos.y-this.mapTileWidth)/this.mapTileWidth)) * this.mapTileWidth;
       break;
 
       case "down":
-      this.anims.play("misa-front-walk", true);
+      this.anims.play("testwalksouth_", true);
       this.body.setVelocityY(trueSpd);
       this.destination.y = (Math.round((curPos.y+this.mapTileWidth)/this.mapTileWidth)) * this.mapTileWidth;
       break;
 
       case "left":
-      this.anims.play("misa-left-walk", true);
+      this.anims.play("testwalkwest_", true);
       this.body.setVelocityX(-trueSpd);
       this.destination.x = (Math.round((curPos.x-this.mapTileWidth)/this.mapTileWidth)) * this.mapTileWidth;
       break;
 
       case "right":
-      this.anims.play("misa-right-walk", true);
+      this.anims.play("testwalkeast_", true);
       this.body.setVelocityX(trueSpd);
       this.destination.x = (Math.round((curPos.x+this.mapTileWidth)/this.mapTileWidth)) * this.mapTileWidth;
       break;
@@ -225,16 +225,16 @@ export class Mob extends Phaser.GameObjects.Sprite {
     switch(this.body.facing)
     {
       case 11:
-        this.setTexture("atlas", "misa-back");
+        this.setTexture("atlas", "testwalknorth_000");
         break;
       case 12:
-        this.setTexture("atlas", "misa-front");
+        this.setTexture("atlas", "testwalksouth_000");
         break;
       case 13:
-        this.setTexture("atlas", "misa-left");
+        this.setTexture("atlas", "testwalkwest_000");
         break;
       case 14:
-        this.setTexture("atlas", "misa-right");
+        this.setTexture("atlas", "testwalkeast_000");
         break;
       default:
         console.log( "No direction on stop-command" );

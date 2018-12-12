@@ -27,13 +27,13 @@ export class gameScene extends Phaser.Scene {
     this.load.image('tile1', '../assets/tilesets/grassdirtstonemin.png');
     this.load.image('tile2', '../assets/tilesets/grassmountainmin.png');
     this.load.tilemapTiledJSON("map", "../assets/maps/testmap1.json");
-    this.load.atlas("atlas", "../assets/atlas/atlas.png", "../assets/atlas/atlas.json");
+    this.load.atlas("atlas", "../assets/atlas/dgraymanjr/dgraymanjr.png", "../assets/atlas/dgraymanjr.json");
   }
 
   //Rendering assets.
   create() {
-    this.socket = io.connect('http://localhost:8081');
-//    this.socket = io.connect('https://arcalion-server.herokuapp.com');
+//    this.socket = io.connect('http://localhost:8081');
+    this.socket = io.connect('https://arcalion-server.herokuapp.com');
 
     this.sound.play("prologueTheme");
 
@@ -101,26 +101,26 @@ export class gameScene extends Phaser.Scene {
     //Block of anims created for mob/players
     const anims = this.anims;
     anims.create({
-      key: "misa-left-walk",
-      frames: anims.generateFrameNames("atlas", { prefix: "misa-left-walk.", start: 0, end: 3, zeroPad: 3 }),
+      key: "testwalkwest_",
+      frames: anims.generateFrameNames("atlas", { prefix: "testwalkeast_", start: 0, end: 3, zeroPad: 3 }),
       frameRate: 10,
       repeat: -1
     });
     anims.create({
-      key: "misa-right-walk",
-      frames: anims.generateFrameNames("atlas", { prefix: "misa-right-walk.", start: 0, end: 3, zeroPad: 3 }),
+      key: "testwalkeast_",
+      frames: anims.generateFrameNames("atlas", { prefix: "testwalkeast_", start: 0, end: 3, zeroPad: 3 }),
       frameRate: 10,
       repeat: -1
     });
     anims.create({
-      key: "misa-front-walk",
-      frames: anims.generateFrameNames("atlas", { prefix: "misa-front-walk.", start: 0, end: 3, zeroPad: 3 }),
+      key: "testwalksouth_",
+      frames: anims.generateFrameNames("atlas", { prefix: "testwalksouth_", start: 0, end: 3, zeroPad: 3 }),
       frameRate: 10,
       repeat: -1
     });
     anims.create({
-      key: "misa-back-walk",
-      frames: anims.generateFrameNames("atlas", { prefix: "misa-back-walk.", start: 0, end: 3, zeroPad: 3 }),
+      key: "testwalknorth_",
+      frames: anims.generateFrameNames("atlas", { prefix: "testwalknorth_", start: 0, end: 3, zeroPad: 3 }),
       frameRate: 10,
       repeat: -1
     });
