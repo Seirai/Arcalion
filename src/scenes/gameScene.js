@@ -60,7 +60,6 @@ export class gameScene extends Phaser.Scene {
         for(let elem in splayers)
           {
             let worldpos = this.map.tileToWorldXY(splayers[elem].x, splayers[elem].y);
-            console.log(worldpos);
             if(elem != this.socket.id)
             {
               let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'misa-front', this.map.tileWidth, 2, elem));
@@ -73,12 +72,11 @@ export class gameScene extends Phaser.Scene {
             }
             else
             {
-              console.log('player created');
               this.player = this.add.existing(new Player(this, worldpos.x, worldpos.y, 'atlas', 'misa-front', this.map.tileWidth, 2, elem));
               this.physics.add.existing(this.player);
               this.player.body.setSize(32, 40);
               this.player.body.setOffset(0, 24);
-              this.players[this.socket.id] = this.player;
+              this.players[elem] = this.player;
               this.sys.updateList.add(this.player);
               camera.startFollow(this.player);
               this.player.cursors = this.cursors;
@@ -109,7 +107,6 @@ export class gameScene extends Phaser.Scene {
       {
         this.players[data.plyr.id].move(data.dir);
         let worldpos = this.map.tileToWorldXY(data.plyr.x, data.plyr.y);
-        console.log(worldpos);
       });
 
     //Block of anims created for mob/this.players
