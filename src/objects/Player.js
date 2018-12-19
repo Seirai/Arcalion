@@ -40,13 +40,47 @@ export class Player extends Mob {
  */
     if(this.inCombat == false)
     {
-      if(this.cursors.left.isDown) this.moveIntention = "left";
-      else if(this.cursors.right.isDown) this.moveIntention = "right";
-      else if(this.cursors.up.isDown) this.moveIntention = "up";
-      else if(this.cursors.down.isDown) this.moveIntention = "down";
-      else if(!this.cursors.isDown) this.moveIntention = false;
+      if(this.cursors.left.isDown && this.attemptMove == false)
+      {
+        this.attemptMove = true;
+        this.scene.socket.emit('moveAttempt', 'left');
+      }
+      else if(this.cursors.right.isDown && this.attemptMove == false)
+      {
+        this.scene.socket.emit('moveAttempt', 'right');
+        this.attemptMove = true;
+      }
+      else if(this.cursors.up.isDown && this.attemptMove == false) 
+      {
+        this.scene.socket.emit('moveAttempt', 'up');
+        this.attemptMove = true;
+      }
+      else if(this.cursors.down.isDown && this.attemptMove == false) 
+      {
+        this.scene.socket.emit('moveAttempt', 'down');
+        this.attemptMove = true;
+      }
+      else if(!this.cursors.isDown && this.isMoving()) this.moveIntention = false;
     }
+    
+  this.scene.socket.on('moveConfirm', direction =>
+    {
+      switch(direction)
+      {
+      case 'left':
+          this.moveIntention = 'left';
+          break;
+        case 'right':
+          this.moveIntention = 'right';
+          break;
+        case 'up':
+          this.moveIntention = 'up';
+          break;
+        case 'down':
+          this.moveIntention = 'down';
+          break;
+      }
+    });
     super.update(time, delta);
-
   }
 }

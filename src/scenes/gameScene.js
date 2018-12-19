@@ -20,6 +20,10 @@ export class gameScene extends Phaser.Scene {
   init()
   {
     this.game.renderer.resize(384, 384, 1.0);
+    this.player;
+    this.cursors;
+    this.map;
+    this.players = {};
   }
 
   //Loading assets.
@@ -32,117 +36,123 @@ export class gameScene extends Phaser.Scene {
 
   //Rendering assets.
   create() {
-//    this.socket = io.connect('http://localhost:8081');
-    this.socket = io.connect('https://arcalion-server.herokuapp.com');
+    this.socket = io.connect('http://localhost:8081');
+//    this.socket = io.connect('https://arcalion-server.herokuapp.com');
 
     this.sound.play("prologueTheme");
 
-    map = this.make.tilemap({ key: "map" });
+    this.map = this.make.tilemap({ key: "map" });
 
     // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
     // Phaser's cache (i.e. the name you used in preload)
-    let tileset = [map.addTilesetImage('grassdirtstone1', 'tile1')];
-    tileset.push(map.addTilesetImage('grassmountain1', 'tile2'));
+    let tileset = [this.map.addTilesetImage('grassdirtstone1', 'tile1')];
+    tileset.push(this.map.addTilesetImage('grassmountain1', 'tile2'));
 
     // Parameters: layer name (or index) from Tiled, tileset, x, y
-    const tileLayer1 = map.createStaticLayer(0, tileset, 0, 0);
-    const tileLayer2 = map.createStaticLayer(1, tileset, 0, 0);
-    const tileLayer3 = map.createStaticLayer(2, tileset, 0, 0);
+    const tileLayer1 = this.map.createStaticLayer(0, tileset, 0, 0);
+    const tileLayer2 = this.map.createStaticLayer(1, tileset, 0, 0);
+    const tileLayer3 = this.map.createStaticLayer(2, tileset, 0, 0);
 
+    this.cursors = this.input.keyboard.createCursorKeys();
 
-    cursors = this.input.keyboard.createCursorKeys();
-
-    let players = [];
     this.socket.on('onLogin', splayers => //server player array
       {
-        splayers.forEach(elem =>
+        for(let elem in splayers)
           {
-            if(elem.id != this.socket.id)
+            let worldpos = this.map.tileToWorldXY(splayers[elem].x, splayers[elem].y);
+            console.log(worldpos);
+            if(elem != this.socket.id)
             {
-              let newPlayer = this.add.existing(new Mob(this, elem.x, elem.y, 'atlas', 'misa-front', map.tileWidth, 2, elem.id));
+              let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'misa-front', this.map.tileWidth, 2, elem));
               this.physics.add.existing(newPlayer);
               newPlayer.body.setSize(32, 40);
               newPlayer.body.setOffset(0, 24);
-              this.sys.updateList.add(newPlayer);
-              players.push(newPlayer);
+              newPlayer.map = this.map;
+              this.players[elem] = newPlayer;
+              this.sys.updateList.add(this.players[elem]);
             }
             else
-            { 
-              player = this.add.existing(new Player(this, elem.x, elem.y, 'atlas', 'misa-front', map.tileWidth, 2, elem.id));
-              this.physics.add.existing(player);
-              player.body.setSize(32, 40);
-              player.body.setOffset(0, 24);
-              players.push(player);
-              this.sys.updateList.add(player);
-              camera.startFollow(player);
-              player.cursors = cursors;
-              player.map = map;
-              player.key = 'player';
+            {
+              console.log('player created');
+              this.player = this.add.existing(new Player(this, worldpos.x, worldpos.y, 'atlas', 'misa-front', this.map.tileWidth, 2, elem));
+              this.physics.add.existing(this.player);
+              this.player.body.setSize(32, 40);
+              this.player.body.setOffset(0, 24);
+              this.players[this.socket.id] = this.player;
+              this.sys.updateList.add(this.player);
+              camera.startFollow(this.player);
+              this.player.cursors = this.cursors;
+              this.player.map = this.map;
+              this.player.key = 'player';
             }
+          }
         });
-      });
 
-    this.socket.on('playerDisconnect', removeIndex =>
+    this.socket.on('playerDisconnect', ()=>
       {
-        players[removeIndex].destroy();
-        players.splice(removeIndex, 1);
+        this.players[this.socket.id].destroy();
+        delete this.players[this.socket.id];
       });
 
     this.socket.on('playerLogin', elem =>
-      { 
-        let newPlayer = this.add.existing(new Mob(this, elem.x, elem.y, 'atlas', 'misa-front', map.tileWidth, 2, elem.id));
+      {
+        let worldpos = this.map.tileToWorldXY(elem.x, elem.y);
+        let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'misa-front', this.map.tileWidth, 2, elem.id));
         this.physics.add.existing(newPlayer);
         newPlayer.body.setSize(32, 40);
         newPlayer.body.setOffset(0, 24);
-        this.sys.updateList.add(newPlayer);
-        players.push(newPlayer);
+        this.players[elem.id] = newPlayer;
+        this.sys.updateList.add(this.players[elem.id]);
+      });
+    
+    this.socket.on('playerMoved', data =>
+      {
+        this.players[data.plyr.id].move(data.dir);
+        let worldpos = this.map.tileToWorldXY(data.plyr.x, data.plyr.y);
+        console.log(worldpos);
       });
 
-    //Block of anims created for mob/players
+    //Block of anims created for mob/this.players
     const anims = this.anims;
     anims.create({
       key: "testwalkwest_",
-      frames: anims.generateFrameNames("atlas", { prefix: "testwalkeast_", start: 0, end: 3, zeroPad: 3 }),
-      frameRate: 10,
+      frames: anims.generateFrameNames("atlas", { prefix: "testwalkwest_", start: 0, end: 3, zeroPad: 3 }),
+      frameRate: 5,
       repeat: -1
     });
     anims.create({
       key: "testwalkeast_",
       frames: anims.generateFrameNames("atlas", { prefix: "testwalkeast_", start: 0, end: 3, zeroPad: 3 }),
-      frameRate: 10,
+      frameRate: 5,
       repeat: -1
     });
     anims.create({
       key: "testwalksouth_",
       frames: anims.generateFrameNames("atlas", { prefix: "testwalksouth_", start: 0, end: 3, zeroPad: 3 }),
-      frameRate: 10,
+      frameRate: 5,
       repeat: -1
     });
     anims.create({
       key: "testwalknorth_",
       frames: anims.generateFrameNames("atlas", { prefix: "testwalknorth_", start: 0, end: 3, zeroPad: 3 }),
-      frameRate: 10,
+      frameRate: 5,
       repeat: -1
     });
 
     const camera = this.cameras.main;
-    camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
   }
 
   //Checking for input and changes.
   update(time, delta) {
-    if(player!=null)player.update(); //Catches player controls
-
+//    if(this.player!=null)this.player.update(); //Catches this.player controls
+    for(let id in this.players)
+    {
+      this.players[id].update();
+    }
   }
 
 
 };
 
-//Defining global variables in module to be hoisted.
-let destination = new Phaser.Math.Vector2;
-let player;
-let mob;
-let cursors;
-let map;
-const speed = 175;

@@ -35,7 +35,8 @@ export class Mob extends Phaser.GameObjects.Sprite {
     this.spd = speed;
     this.inCombat = false;
     this.moveQueue = [];
-
+    this.scene = scene;
+    this.attemptMove = false;
     this.openMobMenu = (pointer) =>
     {
       let closeMenu = () =>
@@ -93,13 +94,14 @@ export class Mob extends Phaser.GameObjects.Sprite {
 
   update(time, delta)
   {
-    super.update(time, delta);
+    
     /**
      * If the Mob the Mob is intending to move and this object is not moving,
      * give the Mob an initial move command in the direction.
      */
         if(this.moveIntention != false && !this.isMoving())
         {
+          console.log('called');
           this.move(this.moveIntention);
         }
     /**
@@ -108,7 +110,8 @@ export class Mob extends Phaser.GameObjects.Sprite {
      */
         else if(this.isMoving() && this.moveIntention != false && this.hasReachedDestination())
         {
-          this.body.stop();
+          this.syncDestination();
+          this.stopMovement();
           this.move(this.moveIntention);
         }
     /**
@@ -117,9 +120,11 @@ export class Mob extends Phaser.GameObjects.Sprite {
      */
         else if(this.isMoving() && this.moveIntention == false && this.hasReachedDestination())
         {
+          this.attemptMove = false;
           this.stopMovement();
           this.syncDestination();
         }
+    super.update(time, delta);
   }
 
 /**
@@ -132,21 +137,6 @@ export class Mob extends Phaser.GameObjects.Sprite {
   isMoving() {
     return (this.body.velocity.x != 0 || this.body.velocity.y != 0);
   }
-
-/**
- * @method Phaser.GameObjects.Sprite.Mob#setMoveIntention
- * @since 3.12.0
- * @param {string} [dir] - Gives the mob a moveintention in a direction.
- * @return {Phaser.GameObjects.Sprite.Mob.setMoveIntention}
- */
-
- setMoveIntention(dir)
- {
-   this.moveIntention = dir;
-   return true;
- }
-
-
 
 /**
    * @method Phaser.GameObjects.Sprite.Mob#move
@@ -281,9 +271,7 @@ export class Mob extends Phaser.GameObjects.Sprite {
 
  getCurrentTile()
  {
-   let tile = new Phaser.Math.Vector2();
-   tile.x = Math.floor(this.destination.x/this.mapTileWidth);
-   tile.y = Math.floor(this.destination.y/this.mapTileWidth);
+   let tile = this.scene.map.worldToTileXY(this.body.position.x, this.body.position.y);
    return(tile);
  }
 }
