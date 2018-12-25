@@ -56,14 +56,16 @@ export class Mob extends Phaser.GameObjects.Sprite {
       this.mobMenu.setVisible(true);
       this.mobMenu.x = pointer.x;
       this.mobMenu.y = pointer.y;
-
-
     }
 
-    this.setInteractive();
-    this.on("pointerdown", function ( pointer ) {
-      if(pointer.rightButtonDown()) this.openMobMenu(pointer);});
+    this.mobClicked = (pointer) =>
+    {
+      if(pointer.rightButtonDown() && this.key != 'player') this.openMobMenu(pointer);
+      console.log(this.scene.socket.id);
+    };
 
+    this.setInteractive();
+    this.on("pointerdown", this.mobClicked);
 
     /**
      *  Mob statistics will go here.

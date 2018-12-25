@@ -19,7 +19,7 @@ export class gameScene extends Phaser.Scene {
 
   init()
   {
-    this.game.renderer.resize(384, 384, 1.0);
+//    this.game.renderer.resize(384, 384, 1.0);
     this.player;
     this.cursors;
     this.map;
@@ -82,6 +82,7 @@ export class gameScene extends Phaser.Scene {
               this.player.cursors = this.cursors;
               this.player.map = this.map;
               this.player.key = 'player';
+
             }
           }
         });
@@ -96,7 +97,7 @@ export class gameScene extends Phaser.Scene {
       {
         let worldpos = this.map.tileToWorldXY(elem.x, elem.y);
         let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'misa-front', this.map.tileWidth, 2, elem.id));
-        this.physics.add.existing(newPlayer);
+        newPlayer = this.physics.add.existing(newPlayer);
         newPlayer.body.setSize(32, 40);
         newPlayer.body.setOffset(0, 24);
         this.players[elem.id] = newPlayer;
