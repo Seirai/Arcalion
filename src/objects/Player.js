@@ -3,8 +3,8 @@
  *  Player.js
  *  A definition of the Player gameobject that encompasses all monsters and players.
  */
-
- import {Mob} from './Mob';
+import {Menu} from '../systems/ui';
+import {Mob} from './Mob';
 
 export class Player extends Mob {
 
@@ -62,8 +62,10 @@ export class Player extends Mob {
       }
       else if(!this.cursors.isDown && this.isMoving()) this.moveIntention = false;
     }
-    
-  this.scene.socket.on('moveConfirm', direction =>
+    ///////////////
+    // Socket-events
+    //
+    this.scene.socket.on('moveConfirm', direction =>
     {
       switch(direction)
       {
@@ -80,7 +82,51 @@ export class Player extends Mob {
           this.moveIntention = 'down';
           break;
       }
-    });
-    super.update(time, delta);
+  });
+
+  this.scene.socket.on('receivedBattleRequest', data =>
+  {
+    let confirmBattle = () =>
+    {
+      this.scene.socket.emit('confirmedBattleRequest', data);
+      this.menu.destroy();
+      delete this.menu;
+    }
+    let cancelBattle = () =>
+    {
+      this.scene.socket.emit('cancelBattleRequest', data);
+      this.menu.destroy();
+      delete this.menu;
+    }
+    if(this.menu == null)
+    { 
+      this.menu = this.scene.add.existing(new Menu(this.scene, this.scene.game.config.width/3 * 1, this.scene.game.config.height/3 * 2, "silver", false));
+      this.menu.addButton(this.scene, 'Accept', 'silver', {}, confirmBattle);
+      this.menu.addButton(this.scene, 'Refuse', 'silver', {}, cancelBattle);
+    }
+  });
+
+  this.scene.socket.on('enterCombat', combatInstance =>
+  {
+    for(let id in combatInstance.combatants)
+    {
+      this.scene.players[id].inCombat = combatInstance.state;
+      if(this.scene.players[id].mobMenu != null)
+      {
+        this.scene.players[id].mobMenu.destroy();
+        delete this.scene.players[id].mobMenu;
+      }
+    }
+
+    let rect = new Phaser.Geom.Rectangle(this.scene.game.config.width/3, this.scene.game.config.height/8, this.scene.game.config.width/3, 50);
+
+    let graphics = this.scene.add.graphics({ fillStyle: { color: 0xffff00 } });
+
+    graphics.fillRectShape(rect);
+  });
+
+  //
+  //////
+  super.update(time, delta);
   }
 }

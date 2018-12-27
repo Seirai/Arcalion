@@ -37,20 +37,23 @@ export class Mob extends Phaser.GameObjects.Sprite {
     this.moveQueue = [];
     this.scene = scene;
     this.attemptMove = false;
+
+    let requestBattle = (pointer) =>
+    {
+      if(pointer.leftButtonDown()) this.scene.socket.emit('playerBattleRequest', { id: this.scene.socket.id, target: this.id });
+    }
+
     this.openMobMenu = (pointer) =>
     {
       let closeMenu = () =>
       {
-        this.mobMenu.setVisible(false);
-      }
-      let fight = (pointer) =>
-      {
-        Combat.initiateCombat(pointer, this.key);
+        this.mobMenu.destroy();
+        delete this.mobMenu;
       }
       if(this.mobMenu == null)
       {
       this.mobMenu = this.scene.add.existing(new Menu(this.scene, pointer.x, pointer.y, "silver", false));
-      this.mobMenu.addButton(this.scene, "Fight", "silver", {}, fight);
+      this.mobMenu.addButton(this.scene, "Fight", "silver", {}, requestBattle);
       this.mobMenu.addButton(this.scene, "Close", "silver", {}, closeMenu);
       }
       this.mobMenu.setVisible(true);
@@ -61,7 +64,6 @@ export class Mob extends Phaser.GameObjects.Sprite {
     this.mobClicked = (pointer) =>
     {
       if(pointer.rightButtonDown() && this.key != 'player') this.openMobMenu(pointer);
-      console.log(this.scene.socket.id);
     };
 
     this.setInteractive();
