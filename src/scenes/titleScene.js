@@ -26,11 +26,13 @@ export class titleScene extends Phaser.Scene {
 
     this.load.audio("titleTheme", "../assets/sound/title_theme.mp3");
     this.load.audio("prologueTheme", "../assets/sound/prologue_theme.mp3");
+
+
   }
 
   create()
   {
-    let foo = () => {console.log("test")};
+    let foo = () => {console.log("clicked")};
 
 
     let titleTheme = this.sound.add("titleTheme");

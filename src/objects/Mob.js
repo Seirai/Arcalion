@@ -105,7 +105,6 @@ export class Mob extends Phaser.GameObjects.Sprite {
      */
         if(this.moveIntention != false && !this.isMoving())
         {
-          console.log('called');
           this.move(this.moveIntention);
         }
     /**
@@ -125,8 +124,8 @@ export class Mob extends Phaser.GameObjects.Sprite {
         else if(this.isMoving() && this.moveIntention == false && this.hasReachedDestination())
         {
           this.attemptMove = false;
-          this.stopMovement();
           this.syncDestination();
+          this.stopMovement();
         }
     super.update(time, delta);
   }

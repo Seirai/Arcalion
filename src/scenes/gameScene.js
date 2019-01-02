@@ -4,7 +4,8 @@
 *  Currently the main scene in which development of core game mechanics and gameplay will happen.
 *
 */
-
+import {createAnimations} from '../systems/Anims';
+import {createMap} from '../systems/Map';
 import {Player} from '../objects/Player';
 import {Mob} from '../objects/Mob';
 import {Button, Menu} from "../systems/ui";
@@ -24,10 +25,35 @@ export class gameScene extends Phaser.Scene {
     this.cursors;
     this.map;
     this.players = {};
+    this.ui = {};
+    //this.anims = {};
+
+    //Scene functions: 
+    this.createButton = function (scene, text) {
+         return scene.rexUI.add.label({
+             background: scene.rexUI.add.roundRectangle(0, 0, 100, 40, 20, 0x5e92f3),
+ 
+             text: scene.add.text(0, 0, text, {
+                 fontSize: '24px'
+             }),
+ 
+             space: {
+                 left: 10,
+                 right: 10,
+                 top: 10,
+                 bottom: 10
+             }
+         });
+     };
   }
 
   //Loading assets.
   preload() {
+    this.load.scenePlugin({
+      key: 'rexuiplugin',
+      url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/plugins/dist/rexuiplugin.min.js',
+      sceneKey: 'rexUI'
+    });
     this.load.image('tile1', '../assets/tilesets/grassdirtstonemin.png');
     this.load.image('tile2', '../assets/tilesets/grassmountainmin.png');
     this.load.tilemapTiledJSON("map", "../assets/maps/testmap1.json");
@@ -36,24 +62,21 @@ export class gameScene extends Phaser.Scene {
 
   //Rendering assets.
   create() {
-    this.socket = io.connect('http://localhost:8081');
-//    this.socket = io.connect('https://arcalion-server.herokuapp.com');
+    //Animations created for all assets at systems/Anims 
+    createAnimations(this);
 
+    //Map is created at systems/Map
+    createMap(this);
+
+    //Sound stuff
     this.sound.play("prologueTheme");
 
-    this.map = this.make.tilemap({ key: "map" });
-
-    // Parameters are the name you gave the tileset in Tiled and then the key of the tileset image in
-    // Phaser's cache (i.e. the name you used in preload)
-    let tileset = [this.map.addTilesetImage('grassdirtstone1', 'tile1')];
-    tileset.push(this.map.addTilesetImage('grassmountain1', 'tile2'));
-
-    // Parameters: layer name (or index) from Tiled, tileset, x, y
-    const tileLayer1 = this.map.createStaticLayer(0, tileset, 0, 0);
-    const tileLayer2 = this.map.createStaticLayer(1, tileset, 0, 0);
-    const tileLayer3 = this.map.createStaticLayer(2, tileset, 0, 0);
-
     this.cursors = this.input.keyboard.createCursorKeys();
+
+/////////////////////////////
+//  socket-definition
+    this.socket = io.connect('http://localhost:8081');
+//    this.socket = io.connect('https://arcalion-server.herokuapp.com');
 
     this.socket.on('onLogin', splayers => //server player array
       {
@@ -62,7 +85,7 @@ export class gameScene extends Phaser.Scene {
             let worldpos = this.map.tileToWorldXY(splayers[elem].x, splayers[elem].y);
             if(elem != this.socket.id)
             {
-              let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'misa-front', this.map.tileWidth, 2, elem));
+              let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'testwalksouth_000', this.map.tileWidth, 3, elem));
               this.physics.add.existing(newPlayer);
               newPlayer.body.setSize(32, 40);
               newPlayer.body.setOffset(0, 24);
@@ -72,7 +95,7 @@ export class gameScene extends Phaser.Scene {
             }
             else
             {
-              this.player = this.add.existing(new Player(this, worldpos.x, worldpos.y, 'atlas', 'misa-front', this.map.tileWidth, 2, elem));
+              this.player = this.add.existing(new Player(this, worldpos.x, worldpos.y, 'atlas', 'testwalksouth_000', this.map.tileWidth, 3, elem));
               this.physics.add.existing(this.player);
               this.player.body.setSize(32, 40);
               this.player.body.setOffset(0, 24);
@@ -96,7 +119,7 @@ export class gameScene extends Phaser.Scene {
     this.socket.on('playerLogin', elem =>
       {
         let worldpos = this.map.tileToWorldXY(elem.x, elem.y);
-        let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'misa-front', this.map.tileWidth, 2, elem.id));
+        let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'testwalksouth_000', this.map.tileWidth, 3, elem.id));
         newPlayer = this.physics.add.existing(newPlayer);
         newPlayer.body.setSize(32, 40);
         newPlayer.body.setOffset(0, 24);
@@ -109,33 +132,6 @@ export class gameScene extends Phaser.Scene {
         this.players[data.plyr.id].move(data.dir);
         let worldpos = this.map.tileToWorldXY(data.plyr.x, data.plyr.y);
       });
-
-    //Block of anims created for mob/this.players
-    const anims = this.anims;
-    anims.create({
-      key: "testwalkwest_",
-      frames: anims.generateFrameNames("atlas", { prefix: "testwalkwest_", start: 0, end: 3, zeroPad: 3 }),
-      frameRate: 5,
-      repeat: -1
-    });
-    anims.create({
-      key: "testwalkeast_",
-      frames: anims.generateFrameNames("atlas", { prefix: "testwalkeast_", start: 0, end: 3, zeroPad: 3 }),
-      frameRate: 5,
-      repeat: -1
-    });
-    anims.create({
-      key: "testwalksouth_",
-      frames: anims.generateFrameNames("atlas", { prefix: "testwalksouth_", start: 0, end: 3, zeroPad: 3 }),
-      frameRate: 5,
-      repeat: -1
-    });
-    anims.create({
-      key: "testwalknorth_",
-      frames: anims.generateFrameNames("atlas", { prefix: "testwalknorth_", start: 0, end: 3, zeroPad: 3 }),
-      frameRate: 5,
-      repeat: -1
-    });
 
     const camera = this.cameras.main;
     camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);

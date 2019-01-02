@@ -99,13 +99,87 @@ export class Player extends Mob {
       delete this.menu;
     }
     if(this.menu == null)
-    { 
+    {
+      this.menu = this.scene.rexUI.add.dialog({
+        x: 512,
+        y: 400,
+        
+        background: this.scene.rexUI.add.roundRectangle(0, 0, 100, 100, 20, 0x5d737e),
+
+        title: this.scene.rexUI.add.label({
+          background: this.scene.rexUI.add.roundRectangle(0, 0, 100, 40, 20, 0x64b6ac),
+          text: this.scene.add.text(0, 0, 'Battle Request', {
+            fontSize: '24px'
+          }),
+          space: {
+            left: 15,
+            right: 15,
+            top: 10,
+            bottom: 10
+          }
+        }),
+
+        content: this.scene.add.text(0, 0, `Player ${data.id} is sending you a battle request, do you accept?`, {
+          fontSize: '24px'
+        }),
+
+        actions: [
+          this.scene.createButton(this.scene, 'Accept'),
+          this.scene.createButton(this.scene, 'No')
+        ],
+
+        space: {
+          title: 25,
+          content: 25,
+          action: 15,
+
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: 20,
+        },
+
+        align: {
+          actions: 'center',
+        }
+      }).layout()
+      .setScale(0);
+
+      let tween = this.scene.tweens.add({
+        targets: this.menu,
+        scaleX: 0.5,
+        scaleY:  0.8,
+        ease: 'Bounce',
+        duration: 1000,
+        repeat: 0,
+        yoyo: false
+      });
+
+      this.print = this.scene.add.text(0, 0, '');
+      this.menu
+            .on('button.click', function (button, groupName, index) {
+                if (button.text == 'Accept') confirmBattle();
+                if (button.text == 'No') cancelBattle();
+            }, this)
+            .on('button.over', function (button, groupName, index) {
+                button.getElement('background').setStrokeStyle(1, 0xffffff);
+            })
+            .on('button.out', function (button, groupName, index) {
+                button.getElement('background').setStrokeStyle();
+            });
+
+
+      /*
       this.menu = this.scene.add.existing(new Menu(this.scene, this.scene.game.config.width/3 * 1, this.scene.game.config.height/3 * 2, "silver", false));
       this.menu.addButton(this.scene, 'Accept', 'silver', {}, confirmBattle);
-      this.menu.addButton(this.scene, 'Refuse', 'silver', {}, cancelBattle);
+      this.menu.addButton(this.scene, 'Refuse', 'silver', {}, cancelBattle);*/
+
     }
   });
-
+  this.scene.socket.on('test', (data) =>
+    {
+    console.log('socket test');
+    });
   this.scene.socket.on('enterCombat', combatInstance =>
   {
     for(let id in combatInstance.combatants)
@@ -116,15 +190,10 @@ export class Player extends Mob {
         this.scene.players[id].mobMenu.destroy();
         delete this.scene.players[id].mobMenu;
       }
+      this.scene.add.text(0, 0, 'Intermission', { fontSize: '24px' });
     }
-
-    let rect = new Phaser.Geom.Rectangle(this.scene.game.config.width/3, this.scene.game.config.height/8, this.scene.game.config.width/3, 50);
-
-    let graphics = this.scene.add.graphics({ fillStyle: { color: 0xffff00 } });
-
-    graphics.fillRectShape(rect);
   });
-
+  
   //
   //////
   super.update(time, delta);
