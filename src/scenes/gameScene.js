@@ -58,6 +58,9 @@ export class gameScene extends Phaser.Scene {
     this.load.image('tile2', '../assets/tilesets/grassmountainmin.png');
     this.load.tilemapTiledJSON("map", "../assets/maps/testmap1.json");
     this.load.atlas("atlas", "../assets/atlas/dgraymanjr/dgraymanjr.png", "../assets/atlas/dgraymanjr.json");
+
+    //Skill assets
+    this.load.image('skillcard_sword', '../assets/ui/skillcards/sword.png');
   }
 
   //Rendering assets.
@@ -72,6 +75,13 @@ export class gameScene extends Phaser.Scene {
     this.sound.play("prologueTheme");
 
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    let gameWidth = this.game.config.width;
+    let gameHeight = this.game.config.height;
+
+    this.stateText = this.add.text(0, 0, 'Not in combat', { fontSize: '24px' });
+    this.chosenSkills = this.add.text(gameWidth/3, gameHeight/5, '', {fontSize: '12px' });
+
 
 /////////////////////////////
 //  socket-definition

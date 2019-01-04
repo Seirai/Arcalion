@@ -1,4 +1,5 @@
-/**
+/*
+ * 
  *  @author      Seirai <seilaizh@gmail.com>
  *  ui.js
  *  A base class for drop-down menus.
@@ -197,3 +198,90 @@ export class Menu extends Phaser.GameObjects.Container
     });
   }
 }
+
+export function createSkillMenu(scene, items)
+{
+  const COLOR_PRIMARY = 0x4e342e;
+  const COLOR_LIGHT = 0x7b5e57;
+  const COLOR_DARK = 0x260e04;
+
+  let gameWidth = scene.game.config.width;
+  let gameHeight = scene.game.config.height;
+  console.log(gameWidth);
+  scene.ui['skillMenu'] = scene.rexUI.add.gridTable({
+    x: gameWidth/2,
+    y: gameHeight/3*2,
+
+    background: scene.rexUI.add.roundRectangle(0, 0, 20, 10, 10, COLOR_PRIMARY),
+    
+    table: {
+      width: 250,
+      height: 400,
+
+      cellWidth: 240,
+      cellHeight: 120,
+      columns: 1,
+    },
+
+    slider: {
+      track: scene.rexUI.add.roundRectangle(0, 0, 20, 10, 10, COLOR_DARK),
+      thumb: scene.rexUI.add.roundRectangle(0, 0, 0, 0, 13, COLOR_LIGHT),
+    },
+
+    createCellContainerCallback: function (cell) {
+      let scene = cell.scene,
+        width = cell.width,
+        height = cell.height,
+        item = cell.item,
+        index = cell.index;
+      return scene.rexUI.add.label({
+        width: width,
+        height: height,
+
+        background: scene.rexUI.add.roundRectangle(0, 0, 20, 20, 0).setStrokeStyle(2, COLOR_DARK),
+        icon: scene.add.image(0, 0, 'skillcard_sword'),
+        text: scene.add.text(0, 0, item.id),
+        space: {
+          icon: 10,
+          left: 5,
+        }
+      })
+      .setOrigin(0)
+      .layout();
+    },
+  }).layout()
+  .setOrigin(0);
+
+  scene.ui['skillMenu'].on('cell.click', function(cellContainer, cellIndex)
+    {
+      if(this.player.selectedSkills.length < 3)
+      {
+        this.player.selectedSkills.push(cellContainer.text);
+        this.chosenSkills.setText('Chosen skills: ' + this.player.selectedSkills);
+      }
+      if(this.player.selectedSkills.length == 3)
+      {
+        let dataBundle =
+        {
+          id: this.player.id,
+          instanceId: this.player.combatInstance.id,
+          selectedSkills: this.player.selectedSkills,
+        }
+        this.socket.emit('intermissionReady', dataBundle);
+        this.stateText.setText('Intermission -- Ready, waiting for other players...');
+      }
+    }, scene)
+    .on('cell.over', function (cellContainer, cellIndex)
+    {
+      cellContainer.getElement('background')
+        .setStrokeStyle(1, 0xffffff)
+        .setDepth(1);
+    }, scene)
+    .on('cell.out', function (cellContainer, cellIndex)
+    {
+      cellContainer.getElement('background')
+        .setStrokeStyle(2, 0x260e04)
+        .setDepth(0);
+    }, scene);
+
+};

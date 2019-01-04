@@ -3,7 +3,7 @@
  *  Player.js
  *  A definition of the Player gameobject that encompasses all monsters and players.
  */
-import {Menu} from '../systems/ui';
+import {Menu, createSkillMenu} from '../systems/ui';
 import {Mob} from './Mob';
 
 export class Player extends Mob {
@@ -26,6 +26,7 @@ export class Player extends Mob {
   {
     super(scene, x, y, texture, frame, maptileWidth, speed, id);
     this.selected = null; //The object that the player has selected
+    this.selectedSkills = [];
   }
 
 //update will call necessary functions for movement
@@ -168,19 +169,13 @@ export class Player extends Mob {
                 button.getElement('background').setStrokeStyle();
             });
 
-
-      /*
-      this.menu = this.scene.add.existing(new Menu(this.scene, this.scene.game.config.width/3 * 1, this.scene.game.config.height/3 * 2, "silver", false));
-      this.menu.addButton(this.scene, 'Accept', 'silver', {}, confirmBattle);
-      this.menu.addButton(this.scene, 'Refuse', 'silver', {}, cancelBattle);*/
-
     }
   });
   this.scene.socket.on('test', (data) =>
     {
     console.log('socket test');
     });
-  this.scene.socket.on('enterCombat', combatInstance =>
+  this.scene.socket.on('combatIntermission', combatInstance =>
   {
     for(let id in combatInstance.combatants)
     {
@@ -190,9 +185,31 @@ export class Player extends Mob {
         this.scene.players[id].mobMenu.destroy();
         delete this.scene.players[id].mobMenu;
       }
-      this.scene.add.text(0, 0, 'Intermission', { fontSize: '24px' });
     }
+      this.scene.stateText.setText('Intermission');
+      this.scene.chosenSkills.setText('Chosen skills: ');
+      this.scene.player.combatInstance = combatInstance;
+      if(this.scene.ui['skillMenu'] == null)
+      {
+        createSkillMenu(this.scene);
+        let skillArray = [];
+        for(let skills in combatInstance.combatants[this.scene.socket.id].skills)
+        {
+          skillArray.push(combatInstance.combatants[this.scene.socket.id].skills[skills]);
+        }
+        this.scene.ui['skillMenu'].setItems(skillArray);
+
+      }
   });
+    
+  this.scene.socket.on('startRound', () =>
+    {
+      this.scene.stateText.setText('Round Start');
+      if(this.scene.ui['skillMenu']!=null)this.scene.ui['skillMenu'].destroy();
+      delete this.scene.ui['skillMenu'];
+
+      this.scene.chosenSkills.setText('');
+    });
   
   //
   //////
