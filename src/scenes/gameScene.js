@@ -95,52 +95,58 @@ export class gameScene extends Phaser.Scene {
             let worldpos = this.map.tileToWorldXY(splayers[elem].x, splayers[elem].y);
             if(elem != this.socket.id)
             {
-              let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'testwalksouth_000', this.map.tileWidth, 3, elem));
-              this.physics.add.existing(newPlayer);
-              newPlayer.body.setSize(32, 40);
-              newPlayer.body.setOffset(0, 24);
-              newPlayer.map = this.map;
-              this.players[elem] = newPlayer;
-              this.sys.updateList.add(this.players[elem]);
+              let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'testwalksouth_000', 
+                {
+                  id: elem,
+                  speed: 3,
+                  gridX: splayers[elem].x,
+                  gridY: splayers[elem].y,
+                }));
+              newPlayer.setInteractive();
             }
             else
             {
-              this.player = this.add.existing(new Player(this, worldpos.x, worldpos.y, 'atlas', 'testwalksouth_000', this.map.tileWidth, 3, elem));
-              this.physics.add.existing(this.player);
-              this.player.body.setSize(32, 40);
-              this.player.body.setOffset(0, 24);
-              this.players[elem] = this.player;
-              this.sys.updateList.add(this.player);
+              console.log(`Worldpos: ${worldpos.x}, ${worldpos.y}`);
+              this.player = this.add.existing(new Player(this, worldpos.x, worldpos.y, 'atlas', 'testwalksouth_000', 
+                {
+                  id: elem,
+                  speed: 3,
+                  gridX: splayers[elem].x,
+                  gridY: splayers[elem].y,
+                }));              
+              
               camera.startFollow(this.player);
-              this.player.cursors = this.cursors;
-              this.player.map = this.map;
-              this.player.key = 'player';
-
+              this.player.setInteractive();
             }
           }
         });
 
-    this.socket.on('playerDisconnect', ()=>
+    this.socket.on('playerDisconnect', (id) =>
       {
-        this.players[this.socket.id].destroy();
-        delete this.players[this.socket.id];
+        this.players[id].destroy();
+        delete this.players[id];
       });
 
     this.socket.on('playerLogin', elem =>
       {
         let worldpos = this.map.tileToWorldXY(elem.x, elem.y);
-        let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'testwalksouth_000', this.map.tileWidth, 3, elem.id));
-        newPlayer = this.physics.add.existing(newPlayer);
-        newPlayer.body.setSize(32, 40);
-        newPlayer.body.setOffset(0, 24);
-        this.players[elem.id] = newPlayer;
-        this.sys.updateList.add(this.players[elem.id]);
+        let newPlayer = this.add.existing(new Mob(this, worldpos.x, worldpos.y, 'atlas', 'testwalksouth_000', 
+                {
+                  id: elem.id,
+                  speed: 3,
+                  gridX: elem.x,
+                  gridY: elem.y,
+                }));
       });
     
     this.socket.on('playerMoved', data =>
       {
-        this.players[data.plyr.id].move(data.dir);
-        let worldpos = this.map.tileToWorldXY(data.plyr.x, data.plyr.y);
+//        this.players[data.plyr.id].move(data.dir);
+        let worldpos = this.map.tileToWorldXY(data.pos.x, data.pos.y);
+        this.players[data.pos.id].setPosition(worldpos.x, worldpos.y);
+        this.players[data.pos.id].body.reset(worldpos.x, worldpos.y);
+//        this.players[data.pos.id].move(data.dir);
+//        this.players[data.pos.id].setDestination({x: worldpos.x, y: worldpos.y});
       });
 
     const camera = this.cameras.main;
@@ -156,7 +162,5 @@ export class gameScene extends Phaser.Scene {
       this.players[id].update();
     }
   }
-
-
 };
 

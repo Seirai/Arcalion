@@ -17,26 +17,49 @@ export class Mob extends Phaser.GameObjects.Sprite {
  * @param {object} [scene] - The scene in which the Mob is created.
  * @param {integer} [x] - The x-coordinate in which the mob will be spawned
  * @param {integer} [y] - The y-coordinate in which the mob will be spawned
- * @param {key} [texture] - The key of the texture/sprite to be loaded onto the mob.
- * @param {integer} [frame] - The frame of the sprite/texture to be selected upon being loaded.
+ * @param {object} [config] - Holds a variety of configuration objects listed below:
+ *  - id
+ *  - 
  *
  * @return {Phaser.GameObjects.Sprite.Mob}
  */
-  constructor (scene, x, y, texture, frame, maptileWidth, speed, id)
+  constructor (scene, x, y, texture, frame, config)
   {
     super(scene, x, y, texture, frame);
-    this.id = id;
+    //Configuration:
+    this.id = config.id;
+    if(config.speed == null) this.spd = 3;
+    else this.spd = config.speed;
+    if(config.state == null) this.state = false;
+    else this.state = config.state;
+    this.scene = scene;
+    this.gridX = config.gridX;
+    this.gridY = config.gridY;
+    this.scene.physics.add.existing(this);
+    this.setOrigin(0, 0.25);
+    this.body.setSize(32, 32);
+    this.body.setOffset(-5, 14);
+
+    this.scene.players[this.id] = this;
+    this.cursors = this.scene.cursors;
+    this.map = this.scene.map;
+    this.key = 'player';
+
+    
+    //Initiating various variables that aren't relevant to config:
     this.moveIntention = false;
-    this.mapTileWidth = maptileWidth;
     this.prevPos;  //previous position
     this.prevVel;  //previous velocity
     this.prevDest; //previous destination
-    this.destination; //set when the mob is given a move order to a coordinate.
-    this.spd = speed;
-    this.inCombat = false;
+    this.destination = this.body.position.clone(); //set when the mob is given a move order to a coordinate.
+    
     this.moveQueue = [];
-    this.scene = scene;
     this.attemptMove = false;
+    
+    //This weird block is to reset the sprite to the grid for some reason it doesn't even with the offsets.
+    let currX = this.map.tileToWorldX(this.gridX);
+    let currY = this.map.tileToWorldY(this.gridY);
+    this.body.reset(currX, currY);
 
     let requestBattle = (pointer) =>
     {
@@ -68,7 +91,6 @@ export class Mob extends Phaser.GameObjects.Sprite {
 
     this.setInteractive();
     this.on("pointerdown", this.mobClicked);
-
     /**
      *  Mob statistics will go here.
      *  design doc: https://docs.google.com/document/d/1R1Zfk5H-SGsoGz-XW6fKIWLZbLpwet5gPclhuVwpVu8/edit?usp=sharing
@@ -98,14 +120,13 @@ export class Mob extends Phaser.GameObjects.Sprite {
 
   update(time, delta)
   {
-    
     /**
      * If the Mob the Mob is intending to move and this object is not moving,
      * give the Mob an initial move command in the direction.
      */
         if(this.moveIntention != false && !this.isMoving())
         {
-          this.move(this.moveIntention);
+          this.move(this.moveIntention, delta);
         }
     /**
      * If the Mob is moving and it still wishes to move but has reached the
@@ -113,7 +134,6 @@ export class Mob extends Phaser.GameObjects.Sprite {
      */
         else if(this.isMoving() && this.moveIntention != false && this.hasReachedDestination())
         {
-          this.syncDestination();
           this.stopMovement();
           this.move(this.moveIntention);
         }
@@ -124,7 +144,6 @@ export class Mob extends Phaser.GameObjects.Sprite {
         else if(this.isMoving() && this.moveIntention == false && this.hasReachedDestination())
         {
           this.attemptMove = false;
-          this.syncDestination();
           this.stopMovement();
         }
     super.update(time, delta);
@@ -151,36 +170,35 @@ export class Mob extends Phaser.GameObjects.Sprite {
    * @return {Phaser.GameObjects.Sprite.Mob.move}
    */
 
-  move(dir)
+  move(dir, dt)
   {
-    this.prevDest = this.body.position.clone();
-    let trueSpd = this.mapTileWidth * this.spd;
-    let curPos = this.body.position;
-    this.destination = this.body.position.clone();
+    this.prevDest = {gridX: this.gridX, gridY: this.gridY};
+    let trueSpd = this.map.tileWidth * this.spd;
+    let curPos = {gridX: this.gridX, gridY: this.gridY};
     switch(dir)
     {
       case "up":
       this.anims.play("testwalknorth_", true);
       this.body.setVelocityY(-trueSpd);
-      this.destination.y = (Math.round((curPos.y-this.mapTileWidth)/this.mapTileWidth)) * this.mapTileWidth;
+      //this.destination.y = (curPos.gridY - 1) * this.map.tileWidth;
       break;
 
       case "down":
       this.anims.play("testwalksouth_", true);
       this.body.setVelocityY(trueSpd);
-      this.destination.y = (Math.round((curPos.y+this.mapTileWidth)/this.mapTileWidth)) * this.mapTileWidth;
+      //this.destination.y = (curPos.gridY + 1) * this.map.tileWidth;
       break;
 
       case "left":
       this.anims.play("testwalkwest_", true);
       this.body.setVelocityX(-trueSpd);
-      this.destination.x = (Math.round((curPos.x-this.mapTileWidth)/this.mapTileWidth)) * this.mapTileWidth;
+      //this.destination.x = (curPos.gridX - 1) * this.map.tileWidth;
       break;
 
       case "right":
       this.anims.play("testwalkeast_", true);
       this.body.setVelocityX(trueSpd);
-      this.destination.x = (Math.round((curPos.x+this.mapTileWidth)/this.mapTileWidth)) * this.mapTileWidth;
+      //this.destination.x = (curPos.gridX + 1) * this.map.tileWidth;
       break;
 
       default:
@@ -233,6 +251,7 @@ export class Mob extends Phaser.GameObjects.Sprite {
         console.log( "No direction on stop-command" );
         break;
     }
+    this.syncDestination();
     return this.body.setVelocity(0);
   }
 /**
@@ -245,8 +264,9 @@ export class Mob extends Phaser.GameObjects.Sprite {
    */
   syncDestination()
   {
-    this.body.position.x = Math.round(this.destination.x/this.mapTileWidth)*this.mapTileWidth;
-    this.body.position.y = Math.round(this.destination.y/this.mapTileWidth)*this.mapTileWidth;
+    this.gridX = this.map.worldToTileX(this.destination.x);
+    this.gridY = this.map.worldToTileY(this.destination.y);
+    this.setPosition(this.destination.x, this.destination.y);
     return true;
   }
 /**
@@ -259,8 +279,7 @@ export class Mob extends Phaser.GameObjects.Sprite {
    */
   setToPrevDest()
   {
-    this.body.position.x = this.prevDest.x;
-    this.body.position.y = this.prevDest.y;
+    this.setPosition(this.prevDest.x, this.prevDest.y);
     return true;
   }
 
@@ -272,9 +291,26 @@ export class Mob extends Phaser.GameObjects.Sprite {
  * @return @var {Phaser.Math.Vector2} [tile]
  */
 
- getCurrentTile()
- {
+  getCurrentTile()
+  {
    let tile = this.scene.map.worldToTileXY(this.body.position.x, this.body.position.y);
    return(tile);
- }
+  }
+  setDestination(config)
+  {
+    if(config.grid != null)
+    {
+      var newX = this.map.tileToWorldX(config.grid.x);
+      var newY = this.map.tileToWorldY(config.grid.y);
+    }
+    else
+    {
+      var newX = config.x;
+      var newY = config.y;
+    }
+
+    this.destination.x = newX;
+    this.destination.y = newY;
+  }
 }
+
