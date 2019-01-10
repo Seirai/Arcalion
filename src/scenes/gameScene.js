@@ -85,8 +85,8 @@ export class gameScene extends Phaser.Scene {
 
 /////////////////////////////
 //  socket-definition
-    this.socket = io.connect('http://localhost:8081');
-//    this.socket = io.connect('https://arcalion-server.herokuapp.com');
+//    this.socket = io.connect('http://localhost:8081');
+    this.socket = io.connect('https://arcalion-server.herokuapp.com');
 
     this.socket.on('onLogin', splayers => //server player array
       {

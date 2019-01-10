@@ -43,7 +43,6 @@ export class Mob extends Phaser.GameObjects.Sprite {
     this.scene.players[this.id] = this;
     this.cursors = this.scene.cursors;
     this.map = this.scene.map;
-    this.key = 'player';
 
     
     //Initiating various variables that aren't relevant to config:

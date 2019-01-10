@@ -259,7 +259,7 @@ export function createSkillMenu(scene, items)
         this.player.selectedSkills.push(cellContainer.text);
         this.chosenSkills.setText('Chosen skills: ' + this.player.selectedSkills);
       }
-      if(this.player.selectedSkills.length == 3)
+      if(this.player.selectedSkills.length == 3 && this.state != 'ready')
       {
         let dataBundle =
         {
@@ -268,6 +268,7 @@ export function createSkillMenu(scene, items)
           selectedSkills: this.player.selectedSkills,
         }
         this.socket.emit('intermissionReady', dataBundle);
+        this.state = 'ready';
         this.stateText.setText('Intermission -- Ready, waiting for other players...');
       }
     }, scene)
@@ -285,3 +286,23 @@ export function createSkillMenu(scene, items)
     }, scene);
 
 };
+
+export function createCombatMenu(scene)
+{
+  let color = 0x00ff00;
+  let alpha = 0.5;
+  let gridColor = 0x000000;
+  let alpha2 = 0.2;
+  let thickness = 2;
+  scene.ui['combatGrid'] = scene.add.graphics();
+  scene.ui['combatGrid'].fillStyle(color, alpha);
+  scene.ui['combatGrid'].lineStyle(thickness, gridColor, alpha2);
+  for (let x = 0; x < scene.map.height; x++)
+  {
+    for(let y = 0; y < scene.map.width; y++)
+    {
+      scene.ui['combatGrid'].fillRect(scene.map.tileWidth * x, scene.map.tileWidth * y, scene.map.tileWidth, scene.map.tileWidth);
+      scene.ui['combatGrid'].strokeRect(scene.map.tileWidth * x, scene.map.tileWidth * y, scene.map.tileWidth, scene.map.tileWidth);
+    }
+  }
+}

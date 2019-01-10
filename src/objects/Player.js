@@ -3,7 +3,7 @@
  *  Player.js
  *  A definition of the Player gameobject that encompasses all monsters and players.
  */
-import {Menu, createSkillMenu} from '../systems/ui';
+import {Menu, createSkillMenu, createCombatMenu} from '../systems/ui';
 import {Mob} from './Mob';
 
 export class Player extends Mob {
@@ -29,6 +29,7 @@ export class Player extends Mob {
     this.selectedSkills = [];
     this.combat = {}; //Container for combat
     this.combat['moveArray'] = []; //Move array.
+    this.key = 'player';
     ///////////////
     // Socket-events
     //
@@ -144,6 +145,7 @@ export class Player extends Mob {
 
     this.scene.socket.on('startIntermission', combatInstance =>
     {
+      this.state = -1;
       for(let id in combatInstance.combatants)
       {
         this.scene.players[id].state = combatInstance.state;
@@ -178,6 +180,8 @@ export class Player extends Mob {
       this.scene.stateText.setText(`Round ${data.round}`);
       if(this.scene.ui['skillMenu']!=null)this.scene.ui['skillMenu'].destroy();
       delete this.scene.ui['skillMenu'];
+
+      if(this.scene.ui['combatGrid']==null) createCombatMenu(this.scene);
     });
   
   //
@@ -195,7 +199,7 @@ export class Player extends Mob {
  * Note: this movement system is only active when the player is not in combat.
  */
 
-    if(this.state == false)
+    if(this.state == false && !Number.isInteger(this.state))
     {
       if(this.cursors.left.isDown && this.attemptMove == false)
       {
@@ -219,9 +223,28 @@ export class Player extends Mob {
       }
       else if(!this.cursors.isDown && this.isMoving()) this.moveIntention = false;
     }
-    else if(Number.isInteger(this.state))
+    else if(Number.isInteger(this.state) && this.state < 4 && this.attemptMove == false)
     {
-
+      if(this.cursors.left.isDown)
+      {
+        this.attemptMove = true;
+        this.scene.socket.emit('moveAttempt', 'left');
+      }
+      else if(this.cursors.right.isDown)
+      {
+        this.scene.socket.emit('moveAttempt', 'right');
+        this.attemptMove = true;
+      }
+      else if(this.cursors.up.isDown) 
+      {
+        this.scene.socket.emit('moveAttempt', 'up');
+        this.attemptMove = true;
+      }
+      else if(this.cursors.down.isDown) 
+      {
+        this.scene.socket.emit('moveAttempt', 'down');
+        this.attemptMove = true;
+      }
     }
   super.update(time, delta);
   }
