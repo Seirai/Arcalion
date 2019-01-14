@@ -43,8 +43,18 @@ export class Mob extends Phaser.GameObjects.Sprite {
     this.scene.players[this.id] = this;
     this.cursors = this.scene.cursors;
     this.map = this.scene.map;
-
     
+    //Statistics calculations:
+    //Primary statistics
+    if(config.constitution != null) this.constitution = config.constitution;
+    else this.constitution = 10;
+    if(config.agility != null) this.agility = config.agility;
+    else this.agility = 10;
+    if(config.strength != null) this.strength = config.strength;
+    
+    //Secondary statistics
+    this.health = 90 + this.constitution;
+
     //Initiating various variables that aren't relevant to config:
     this.moveIntention = false;
     this.prevPos;  //previous position

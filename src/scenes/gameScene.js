@@ -58,7 +58,9 @@ export class gameScene extends Phaser.Scene {
     this.load.image('tile2', '../assets/tilesets/grassmountainmin.png');
     this.load.tilemapTiledJSON("map", "../assets/maps/testmap1.json");
     this.load.atlas("atlas", "../assets/atlas/dgraymanjr/dgraymanjr.png", "../assets/atlas/dgraymanjr.json");
-
+    //Loading buttons here for now
+    this.load.atlas("buttons", "../assets/ui/button.png", "../assets/ui/button_atlas.json");
+    this.load.atlas("ui", "../assets/ui/ui.png", "../assets/ui/ui_atlas.json");
     //Skill assets
     this.load.image('skillcard_sword', '../assets/ui/skillcards/sword.png');
   }
@@ -72,7 +74,7 @@ export class gameScene extends Phaser.Scene {
     createMap(this);
 
     //Sound stuff
-    this.sound.play("prologueTheme");
+//    this.sound.play("prologueTheme");
 
     this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -80,13 +82,18 @@ export class gameScene extends Phaser.Scene {
     let gameHeight = this.game.config.height;
 
     this.stateText = this.add.text(0, 0, 'Not in combat', { fontSize: '24px' });
-    this.chosenSkills = this.add.text(gameWidth/3, gameHeight/5, '', {fontSize: '12px' });
+    this.chosenSkills = this.add.text(384, 0, '', {fontSize: '12px' });
+
+    let helpTextContent = 'Combat test guide:\n\t- Arrow keys to move\n\t- Right click to open menu on interactable game objects\n\t- Left click to select option on menus\n\nThis is a very early build of Arcalion! Please be sure to report any bugs to the developer.'
+    this.helpText = this.add.text(0, 384, helpTextContent, {fontSize: '12px'});
+
+    this.statusText = this.add.text(512, 0, 'Health: ', {fontSize: '12px'});
 
 
 /////////////////////////////
 //  socket-definition
-//    this.socket = io.connect('http://localhost:8081');
-    this.socket = io.connect('https://arcalion-server.herokuapp.com');
+    this.socket = io.connect('http://localhost:8081');
+//    this.socket = io.connect('https://arcalion-server.herokuapp.com');
 
     this.socket.on('onLogin', splayers => //server player array
       {
@@ -101,8 +108,10 @@ export class gameScene extends Phaser.Scene {
                   speed: 3,
                   gridX: splayers[elem].x,
                   gridY: splayers[elem].y,
+                  strength: splayers[elem].strength,
+                  agility: splayers[elem].agility,
+                  constitution: splayers[elem].constitution
                 }));
-              newPlayer.setInteractive();
             }
             else
             {
@@ -113,10 +122,12 @@ export class gameScene extends Phaser.Scene {
                   speed: 3,
                   gridX: splayers[elem].x,
                   gridY: splayers[elem].y,
+                  strength: splayers[elem].strength,
+                  agility: splayers[elem].agility,
+                  constitution: splayers[elem].constitution
                 }));              
-              
+              this.statusText.setText(`Health: ${this.player.health}`); 
               camera.startFollow(this.player);
-              this.player.setInteractive();
             }
           }
         });
@@ -136,6 +147,9 @@ export class gameScene extends Phaser.Scene {
                   speed: 3,
                   gridX: elem.x,
                   gridY: elem.y,
+                  strength: splayers[elem].strength,
+                  agility: splayers[elem].agility,
+                  constitution: splayers[elem].constitution
                 }));
       });
     

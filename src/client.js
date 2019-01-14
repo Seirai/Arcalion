@@ -15,7 +15,7 @@ const gameConfig = {
   width: 1024,
   height: 768,
   disableContextMenu: true,
-  scene: [ titleScene, gameScene ],
+  scene: [ gameScene ],
 
   //Enabling physics
   physics: {

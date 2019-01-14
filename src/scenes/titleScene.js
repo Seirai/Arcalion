@@ -24,8 +24,8 @@ export class titleScene extends Phaser.Scene {
     this.load.atlas("buttons", "../assets/ui/button.png", "../assets/ui/button_atlas.json");
     this.load.atlas("ui", "../assets/ui/ui.png", "../assets/ui/ui_atlas.json");
 
-    this.load.audio("titleTheme", "../assets/sound/title_theme.mp3");
-    this.load.audio("prologueTheme", "../assets/sound/prologue_theme.mp3");
+//    this.load.audio("titleTheme", "../assets/sound/title_theme.mp3");
+//    this.load.audio("prologueTheme", "../assets/sound/prologue_theme.mp3");
 
 
   }
@@ -35,11 +35,11 @@ export class titleScene extends Phaser.Scene {
     let foo = () => {console.log("clicked")};
 
 
-    let titleTheme = this.sound.add("titleTheme");
-    let prologueTheme = this.sound.add("prologueTheme");
-    prologueTheme.setLoop(true);
-    titleTheme.play();
-    titleTheme.setLoop(true);
+//    let titleTheme = this.sound.add("titleTheme");
+//    let prologueTheme = this.sound.add("prologueTheme");
+//    prologueTheme.setLoop(true);
+//    titleTheme.play();
+//    titleTheme.setLoop(true);
     let startMenu = this.add.existing(new Menu(this, 512, 271, "silver", true));
     startMenu.addButton(this, "Start", "silver", {}, this.startGame);
     startMenu.addButton(this, "Options", "silver", {}, foo);

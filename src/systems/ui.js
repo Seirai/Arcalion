@@ -265,7 +265,7 @@ export function createSkillMenu(scene, items)
         {
           id: this.player.id,
           instanceId: this.player.combatInstance.id,
-          selectedSkills: this.player.selectedSkills,
+          selectedSkills: this.player.selectedSkills, //TODO in the future: erase selected skills client side, verify for valid spells on server (or flag for cheating if client is using unusable skills).
         }
         this.socket.emit('intermissionReady', dataBundle);
         this.state = 'ready';
@@ -287,22 +287,62 @@ export function createSkillMenu(scene, items)
 
 };
 
+const CombatGrids = [[[0,0]], [[0,0],[0,1],[0,-1],[1,0],[-1,0]], [[0,0],[0,1],[0,-1],[1,0],[-1,0],[0,2],[1,1],[-1,1],[-2,0],[2,0],[-1,-1],[1,-1],[0,-2]], [[0,0],[0,1],[0,-1],[1,0],[-1,0],[0,2],[1,1],[-1,1],[-2,0],[2,0],[-1,-1],[1,-1],[0,-2],[0,3],[1,2],[-1,2],[-2,1],[2,1],[-3,0],[3,0],[-2,-1],[2,-1],[-1,-2],[1,-2],[0,-3]]];
+const gridConfig = {color: 0x00ff00,
+  alpha: 0.5,
+  gridColor: 0x000000,
+  alpha2: 0.2,
+  thickness: 2
+}
+
 export function createCombatMenu(scene)
 {
-  let color = 0x00ff00;
-  let alpha = 0.5;
-  let gridColor = 0x000000;
-  let alpha2 = 0.2;
-  let thickness = 2;
   scene.ui['combatGrid'] = scene.add.graphics();
-  scene.ui['combatGrid'].fillStyle(color, alpha);
-  scene.ui['combatGrid'].lineStyle(thickness, gridColor, alpha2);
-  for (let x = 0; x < scene.map.height; x++)
+  scene.ui['combatGrid'].fillStyle(gridConfig.color, gridConfig.alpha);
+  scene.ui['combatGrid'].lineStyle(gridConfig.thickness, gridConfig.gridColor, gridConfig.alpha2);
+  let movesLeft = 3 - scene.player.combat.moveArray.length;
+  for(let [x,y] of CombatGrids[movesLeft])
   {
-    for(let y = 0; y < scene.map.width; y++)
-    {
-      scene.ui['combatGrid'].fillRect(scene.map.tileWidth * x, scene.map.tileWidth * y, scene.map.tileWidth, scene.map.tileWidth);
-      scene.ui['combatGrid'].strokeRect(scene.map.tileWidth * x, scene.map.tileWidth * y, scene.map.tileWidth, scene.map.tileWidth);
-    }
+    let actualX = scene.player.gridX + x;
+    let actualY = scene.player.gridY + y;
+    scene.ui['combatGrid'].fillRect(scene.map.tileWidth * actualX, scene.map.tileWidth * actualY, scene.map.tileWidth, scene.map.tileWidth);
+    scene.ui['combatGrid'].strokeRect(scene.map.tileWidth * actualX, scene.map.tileWidth * actualY, scene.map.tileWidth, scene.map.tileWidth);
   }
-}
+
+
+  //Combat menu stuff:
+  let combatConfirm = () =>
+  {
+    let data = {};
+    data.id = scene.player.combat.id;
+    data.moveArray = scene.player.moveArray;
+    scene.socket.emit('confirmMove', data);
+  };
+  let combatCancel = () =>
+  {
+    scene.player.combat.moveArray = [];
+    scene.player.setPosition(scene.player.combat.initialPos.x, scene.player.combat.initialPos.y);
+    scene.player.gridX = scene.player.combat.initialPos.grid.x;
+    scene.player.gridY = scene.player.combat.initialPos.grid.y;
+    scene.player.setDestination(scene.player.combat.initialPos.x, scene.player.combat.initialPos.y);
+    redrawGrids(scene);
+  };
+
+  scene.ui['combatMenu'] = scene.add.existing(new Menu(scene, 448, 174, 'silver', true));
+  scene.ui.combatMenu.addButton(scene, 'Confirm', 'silver', {}, combatConfirm);
+  scene.ui.combatMenu.addButton(scene, 'Cancel', 'silver', {}, combatCancel);
+
+};
+
+export function redrawGrids(scene)
+{
+  scene.ui.combatGrid.clear();
+  let movesLeft = 3 - scene.player.combat.moveArray.length;
+  for(let [x,y] of CombatGrids[movesLeft])
+  { 
+    let actualX = scene.player.gridX + x;
+    let actualY = scene.player.gridY + y;
+    scene.ui['combatGrid'].fillRect(scene.map.tileWidth * actualX, scene.map.tileWidth * actualY, scene.map.tileWidth, scene.map.tileWidth);
+    scene.ui['combatGrid'].strokeRect(scene.map.tileWidth * actualX, scene.map.tileWidth * actualY, scene.map.tileWidth, scene.map.tileWidth);
+  }
+};
