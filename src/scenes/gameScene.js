@@ -147,21 +147,22 @@ export class gameScene extends Phaser.Scene {
                   speed: 3,
                   gridX: elem.x,
                   gridY: elem.y,
-                  strength: splayers[elem].strength,
-                  agility: splayers[elem].agility,
-                  constitution: splayers[elem].constitution
+                  strength: elem.strength,
+                  agility: elem.agility,
+                  constitution: elem.constitution
                 }));
       });
     
     this.socket.on('playerMoved', data =>
-      {
-//        this.players[data.plyr.id].move(data.dir);
-        let worldpos = this.map.tileToWorldXY(data.pos.x, data.pos.y);
-        this.players[data.pos.id].setPosition(worldpos.x, worldpos.y);
-        this.players[data.pos.id].body.reset(worldpos.x, worldpos.y);
-//        this.players[data.pos.id].move(data.dir);
-//        this.players[data.pos.id].setDestination({x: worldpos.x, y: worldpos.y});
-      });
+    {
+      let player = this.players[data.id];
+//        player.move(data.dir);
+      let worldpos = this.map.tileToWorldXY(data.pos.x, data.pos.y);
+      player.setPosition(worldpos.x, worldpos.y);
+      player.body.reset(worldpos.x, worldpos.y);
+//        player.move(data.dir);
+//        player.setDestination({x: worldpos.x, y: worldpos.y});
+    });
 
     const camera = this.cameras.main;
     camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);

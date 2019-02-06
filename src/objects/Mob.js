@@ -7,7 +7,7 @@
 import {Menu} from "../systems/ui";
 
 import * as Combat from "../systems/Combat";
-
+import {redrawGrids} from '../systems/ui';
 export class Mob extends Phaser.GameObjects.Sprite {
 
 /**
@@ -276,6 +276,9 @@ export class Mob extends Phaser.GameObjects.Sprite {
     this.gridX = this.map.worldToTileX(this.destination.x);
     this.gridY = this.map.worldToTileY(this.destination.y);
     this.setPosition(this.destination.x, this.destination.y);
+    if(Number.isInteger(this.state)) //If we're in combat
+      redrawGrids(this.scene);
+
     return true;
   }
 /**

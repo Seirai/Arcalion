@@ -55,8 +55,16 @@ export class Player extends Mob {
           this.setDestination({grid: data.pos});
           break;
       }
+      if(Number.isInteger(this.state))
+      {
+        this.combat.moveArray = data.moveArray;
+      }
     });
-
+    this.scene.socket.on('moveDenied', err =>
+    {
+      this.attemptMove = false;
+      console.log(`Movement denied because of error: ${err}`);
+    });
     this.scene.socket.on('receivedBattleRequest', data =>
     {
       let confirmBattle = () =>
@@ -208,6 +216,7 @@ export class Player extends Mob {
     this.scene.socket.on('executeRound', data =>
       {
         
+
       });
   //
   //////
@@ -223,74 +232,56 @@ export class Player extends Mob {
  * move. If no key is held down then moveIntention is false
  * Note: this movement system is only active when the player is not in combat.
  */
-
+  if(this.attemptMove === false)
+  {
     if(this.state == false && !Number.isInteger(this.state))
     {
-      if(this.cursors.left.isDown && this.attemptMove == false)
+      if(this.cursors.left.isDown)
       {
         this.attemptMove = true;
         this.scene.socket.emit('moveAttempt', 'left');
       }
-      else if(this.cursors.right.isDown && this.attemptMove == false)
+      else if(this.cursors.right.isDown)
       {
         this.scene.socket.emit('moveAttempt', 'right');
         this.attemptMove = true;
       }
-      else if(this.cursors.up.isDown && this.attemptMove == false) 
+      else if(this.cursors.up.isDown)
       {
         this.scene.socket.emit('moveAttempt', 'up');
         this.attemptMove = true;
       }
-      else if(this.cursors.down.isDown && this.attemptMove == false) 
+      else if(this.cursors.down.isDown)
       {
         this.scene.socket.emit('moveAttempt', 'down');
         this.attemptMove = true;
       }
-      else if(!this.cursors.isDown && this.isMoving()) this.moveIntention = false;
     }
-    else if(Number.isInteger(this.state) && this.combat.moveArray.length < 3 && this.attemptMove == false && !this.isMoving())
+    else if(Number.isInteger(this.state))
     {
       if(this.cursors.left.isDown)
       {
-        this.setDestination({grid: {x: this.gridX-1, y: this.gridY}});
-        this.gridX--;
-        this.move('left');
+        this.scene.socket.emit('combatMove', 'left');
         this.attemptMove = true;
-        this.combat.moveArray.push('left');
-        console.log(this.combat.moveArray);
-        redrawGrids(this.scene);
       }
       else if(this.cursors.right.isDown)
       {
-        this.setDestination({grid: {x: this.gridX+1, y: this.gridY}});
-        this.gridX++;
-        this.move('right');
+        this.scene.socket.emit('combatMove', 'right');
         this.attemptMove = true;
-        this.combat.moveArray.push('right');
-        console.log(this.combat.moveArray);
-        redrawGrids(this.scene);
       }
-      else if(this.cursors.up.isDown) 
+      else if(this.cursors.up.isDown)
       {
-        this.setDestination({grid: {x: this.gridX, y: this.gridY-1}});
-        this.gridY--;
-        this.move('up');
+        this.scene.socket.emit('combatMove', 'up');
         this.attemptMove = true;
-        this.combat.moveArray.push('up');
-        console.log(this.combat.moveArray);
-        redrawGrids(this.scene);
       }
-      else if(this.cursors.down.isDown) 
+      else if(this.cursors.down.isDown)
       {
-        this.setDestination({grid: {x: this.gridX, y: this.gridY+1}});
-        this.gridY++;
-        this.move('down');
+        this.scene.socket.emit('combatMove', 'down');
         this.attemptMove = true;
-        this.combat.moveArray.push('down');
-        console.log(this.combat.moveArray);
-        redrawGrids(this.scene);
       }
     }
+  }
+  else if(!this.cursors.isDown && this.isMoving()) this.moveIntention = false;
   super.update(time, delta);
   }
 }

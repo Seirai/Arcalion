@@ -295,7 +295,7 @@ const gridConfig = {color: 0x00ff00,
   thickness: 2
 }
 
-export function createCombatMenu(scene)
+export function createCombatMenu(scene, dir)
 {
   scene.ui['combatGrid'] = scene.add.graphics();
   scene.ui['combatGrid'].fillStyle(gridConfig.color, gridConfig.alpha);
@@ -313,24 +313,24 @@ export function createCombatMenu(scene)
   //Combat menu stuff:
   let combatConfirm = () =>
   {
-    let data = {};
-    data.id = scene.player.combat.id;
-    data.moveArray = scene.player.moveArray;
-    scene.socket.emit('confirmMove', data);
+    scene.socket.emit('confirmMove', scene.player.combat.initialPos.grid);
   };
   let combatCancel = () =>
   {
-    scene.player.combat.moveArray = [];
+    scene.socket.emit('combatCancelMove', scene.player.combat.initialPos.grid); 
     scene.player.setPosition(scene.player.combat.initialPos.x, scene.player.combat.initialPos.y);
     scene.player.gridX = scene.player.combat.initialPos.grid.x;
     scene.player.gridY = scene.player.combat.initialPos.grid.y;
+    scene.player.combat.moveArray = [];
     scene.player.setDestination(scene.player.combat.initialPos.x, scene.player.combat.initialPos.y);
     redrawGrids(scene);
   };
-
-  scene.ui['combatMenu'] = scene.add.existing(new Menu(scene, 448, 174, 'silver', true));
-  scene.ui.combatMenu.addButton(scene, 'Confirm', 'silver', {}, combatConfirm);
-  scene.ui.combatMenu.addButton(scene, 'Cancel', 'silver', {}, combatCancel);
+  if(scene.ui.combatMenu === undefined)
+  {
+    scene.ui['combatMenu'] = scene.add.existing(new Menu(scene, 448, 174, 'silver', true));
+    scene.ui.combatMenu.addButton(scene, 'Confirm', 'silver', {}, combatConfirm);
+    scene.ui.combatMenu.addButton(scene, 'Cancel', 'silver', {}, combatCancel);
+  }
 
 };
 
