@@ -21,29 +21,30 @@ export class titleScene extends Phaser.Scene {
 
   preload()
   {
-    this.load.atlas("buttons", "../assets/ui/button.png", "../assets/ui/button_atlas.json");
-    this.load.atlas("ui", "../assets/ui/ui.png", "../assets/ui/ui_atlas.json");
-
-//    this.load.audio("titleTheme", "../assets/sound/title_theme.mp3");
-//    this.load.audio("prologueTheme", "../assets/sound/prologue_theme.mp3");
-
-
   }
 
   create()
   {
     let foo = () => {console.log("clicked")};
+    
+    this.input.keyboard.on('keydown', () =>
+      {
+        this.scene.start('gameScene');
+      });
 
-
-//    let titleTheme = this.sound.add("titleTheme");
-//    let prologueTheme = this.sound.add("prologueTheme");
-//    prologueTheme.setLoop(true);
-//    titleTheme.play();
-//    titleTheme.setLoop(true);
-    let startMenu = this.add.existing(new Menu(this, 512, 271, "silver", true));
+    this.add.image(0, 0, 'start_screen_splash').setOrigin(0).setDepth(0);
+    this.add.image(this.game.renderer.width/2, this.game.renderer.height/5 + 50, 'project_arcalion_logo');
+    this.add.image(this.game.renderer.width/2, this.game.renderer.height/4 * 3, 'startgame_button');
+    this.add.image(70, this.game.renderer.height - 12, 'tilted_studios_logo');
+    let titleTheme = this.sound.add("titleTheme");
+    let prologueTheme = this.sound.add("prologueTheme");
+    prologueTheme.setLoop(true);
+    prologueTheme.play();
+    prologueTheme.setLoop(true);
+/*    let startMenu = this.add.existing(new Menu(this, this.game.renderer.width/2, this.game.renderer.height/5 * 3, "silver", true));
     startMenu.addButton(this, "Start", "silver", {}, this.startGame);
     startMenu.addButton(this, "Options", "silver", {}, foo);
-    startMenu.addButton(this, "Quit", "silver", {}, foo);
+    startMenu.addButton(this, "Quit", "silver", {}, foo);*/
   }
 
   startGame()

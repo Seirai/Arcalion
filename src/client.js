@@ -7,15 +7,16 @@
 
 import 'phaser';
 import io from 'socket.io-client';
+import { loadScene } from './scenes/loadScene';
 import { titleScene } from './scenes/titleScene';
 import { gameScene } from './scenes/gameScene';
 
 const gameConfig = {
   type: Phaser.AUTO,
-  width: 1024,
-  height: 768,
+  width: 1280,
+  height: 720,
   disableContextMenu: true,
-  scene: [ gameScene ],
+  scene: [ loadScene, titleScene, gameScene ],
 
   //Enabling physics
   physics: {
