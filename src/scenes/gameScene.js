@@ -48,12 +48,18 @@ export class gameScene extends Phaser.Scene {
   }
 
   //Loading assets.
-  preload() {
+  preload() { //Comment this out if loadScene/titleScene are included.
     this.load.scenePlugin({
       key: 'rexuiplugin',
       url: 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/plugins/dist/rexuiplugin.min.js',
       sceneKey: 'rexUI'
     });
+    this.load.image('tile1', '../assets/tilesets/grassdirtstonemin.png');
+    this.load.image('tile2', '../assets/tilesets/grassmountainmin.png');
+    this.load.tilemapTiledJSON('map', '../assets/maps/testmap1.json');
+    this.load.atlas('atlas', '../assets/atlas/dgraymanjr/dgraymanjr.png', '../assets/atlas/dgraymanjr.json');
+    this.load.atlas('buttons', '../assets/ui/button.png', '../assets/ui/button_atlas.json');
+    this.load.image('skillcard_sword', '../assets/ui/skillcards/sword.png');
   }
 
   //Rendering assets.
@@ -84,7 +90,7 @@ export class gameScene extends Phaser.Scene {
 /////////////////////////////
 //  socket-definition
     this.socket = io.connect('http://localhost:8081');
-//    this.socket = io.connect('https://arcalion-server.herokuapp.com');
+//   this.socket = io.connect('https://arcalion-server.herokuapp.com');
 
     this.socket.on('onLogin', splayers => //server player array
       {
