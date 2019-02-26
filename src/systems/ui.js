@@ -48,7 +48,7 @@ export class Button extends Phaser.GameObjects.Container
       //where if it is clicked, the function will be called.
       //@TODO Make the button also initialize a new variable to hold the function
       //in case the player wants to select the button without clicking it.
-      if(func != null) this.buttonImage.on("pointerup", func, scene);
+      if(func != null) this.buttonImage.on("pointerdown", func, scene);
 
       //The frame and an extra identifier for the button to make it change frames
       //depending on what happens to it.
@@ -61,8 +61,8 @@ export class Button extends Phaser.GameObjects.Container
       scene.add.image(x, y, "ui", "ui_button").setInteractive()];
       if(func != null)
       {
-        this.buttonImage[0].on("pointerup", func);
-        this.buttonImage[1].on("pointerup", func);
+        this.buttonImage[0].on("pointerdown", func);
+        this.buttonImage[1].on("pointerdown", func);
       }
       this.textureFrame = "ui_button";
       this.textureKey = "ui";
@@ -73,8 +73,8 @@ export class Button extends Phaser.GameObjects.Container
       scene.add.image(x, y, "ui", "ui_button").setInteractive()];
       if(func != null)
       {
-        this.buttonImage[0].on("pointerup", func);
-        this.buttonImage[1].on("pointerup", func);
+        this.buttonImage[0].on("pointerdown", func);
+        this.buttonImage[1].on("pointerdown", func);
       }
       this.textureFrame = "ui_button";
       this.textureKey = "ui";
@@ -85,8 +85,8 @@ export class Button extends Phaser.GameObjects.Container
       scene.add.image(x, y, "ui", "ui_button").setInteractive()];
       if(func != null)
       {
-        this.buttonImage[0].on("pointerup", func);
-        this.buttonImage[1].on("pointerup", func);
+        this.buttonImage[0].on("pointerdown", func);
+        this.buttonImage[1].on("pointerdown", func);
       }
       this.textureFrame = "ui_button";
       this.textureKey = "ui";
@@ -98,7 +98,7 @@ export class Button extends Phaser.GameObjects.Container
       this.buttonImage.imageType = "Button";
       this.add(this.buttonImage);
       this.add(this.buttonText);
-      if(func != null) this.buttonImage.on("pointerup", func, scene);
+      if(func != null) this.buttonImage.on("pointerdown", func, scene);
       this.textureFrame = "button_default";
       this.textureKey = "buttons";
       this.key = key;
@@ -264,7 +264,7 @@ export function createSkillMenu(scene, items)
         let dataBundle =
         {
           id: this.player.id,
-          instanceId: this.player.combatInstance.id,
+          instanceId: this.player.combat.id,
           selectedSkills: this.player.selectedSkills, //TODO in the future: erase selected skills client side, verify for valid spells on server (or flag for cheating if client is using unusable skills).
         }
         this.socket.emit('intermissionReady', dataBundle);
@@ -300,8 +300,7 @@ export function createCombatMenu(scene, dir)
   scene.ui['combatGrid'] = scene.add.graphics();
   scene.ui['combatGrid'].fillStyle(gridConfig.color, gridConfig.alpha);
   scene.ui['combatGrid'].lineStyle(gridConfig.thickness, gridConfig.gridColor, gridConfig.alpha2);
-  let movesLeft = 3 - scene.player.combat.moveArray.length;
-  for(let [x,y] of CombatGrids[movesLeft])
+  for(let [x,y] of CombatGrids[1])
   {
     let actualX = scene.player.gridX + x;
     let actualY = scene.player.gridY + y;
@@ -318,11 +317,8 @@ export function createCombatMenu(scene, dir)
   let combatCancel = () =>
   {
     scene.socket.emit('combatCancelMove', scene.player.combat.initialPos.grid); 
-    scene.player.setPosition(scene.player.combat.initialPos.x, scene.player.combat.initialPos.y);
-    scene.player.gridX = scene.player.combat.initialPos.grid.x;
-    scene.player.gridY = scene.player.combat.initialPos.grid.y;
+    scene.player.resetPosition();
     scene.player.combat.moveArray = [];
-    scene.player.setDestination(scene.player.combat.initialPos.x, scene.player.combat.initialPos.y);
     redrawGrids(scene);
   };
   if(scene.ui.combatMenu === undefined)
@@ -337,8 +333,7 @@ export function createCombatMenu(scene, dir)
 export function redrawGrids(scene)
 {
   scene.ui.combatGrid.clear();
-  let movesLeft = 3 - scene.player.combat.moveArray.length;
-  for(let [x,y] of CombatGrids[movesLeft])
+  for(let [x,y] of CombatGrids[0])
   { 
     let actualX = scene.player.gridX + x;
     let actualY = scene.player.gridY + y;

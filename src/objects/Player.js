@@ -5,7 +5,7 @@
  */
 import {Menu, createSkillMenu, createCombatMenu, redrawGrids} from '../systems/ui';
 import {Mob} from './Mob';
-
+import {CST} from '../systems/Constants';
 export class Player extends Mob {
 
 /**
@@ -27,7 +27,6 @@ export class Player extends Mob {
     super(scene, x, y, texture, frame, config);
     this.selected = null; //The object that the player has selected
     this.selectedSkills = [];
-    this.combat = {}; //Container for combat
     this.combat['moveArray'] = []; //Move array.
     this.combat['usedSkills'] = []; //An array for carrying the skills that were used in the round. Might be redundant.
     this.key = 'player';
@@ -54,10 +53,6 @@ export class Player extends Mob {
           this.moveIntention = 'down';
           this.setDestination({grid: data.pos});
           break;
-      }
-      if(Number.isInteger(this.state))
-      {
-        this.combat.moveArray = data.moveArray;
       }
     });
     this.scene.socket.on('moveDenied', err =>
@@ -165,7 +160,7 @@ export class Player extends Mob {
           delete this.scene.players[id].mobMenu;
         }
       }
-      this.scene.stateText.setText('Intermission');
+      this.scene.stateText.setText(`Intermission ${combatInstance.round}`);
       this.scene.chosenSkills.setText('Chosen skills: ');
       this.scene.player.combatInstance = combatInstance;
       
@@ -187,15 +182,8 @@ export class Player extends Mob {
     
     this.scene.socket.on('startRound', (data) =>
     {
-      if(data.round == null) data.round = 0;
-      else data.round++;
+      if(data.round == null) throw 'no round # in startRound';
       this.state = data.round;
-      this.combat.initialPos = {x: this.x,   //Initial position of the player as the round started
-        y: this.y,
-        grid: { x: this.gridX,
-          y: this.gridY
-          }
-        };           
       this.scene.stateText.setText(`Round ${data.round}`);
       if(this.scene.ui['skillMenu']!=null)
       {
@@ -214,10 +202,33 @@ export class Player extends Mob {
     });
 
     this.scene.socket.on('executeRound', data =>
+    {
+      this.scene.stateText.setText(`Executing Round ${this.state}`);
+      this.resetPosition();
+      scene.ui.combatMenu.destroy();
+      delete scene.ui.combatMenu;
+      console.log(data);
+      for(let id in data)
       {
-        
-
-      });
+        let player = this.scene.players[id];
+        let sPlayer = data[id];
+        let moveArray = sPlayer.combat.moveArray;
+        for(let index in moveArray)
+        {
+          let move = moveArray[index];
+          console.log(`Executing ${move} from ${moveArray}`);
+          if(CST.dir.indexOf(move) != -1) //if move is a directional input
+          {
+            player.setDestination({grid: {x: sPlayer.x, y: sPlayer.y}});
+            player.gridX = sPlayer.x;
+            player.gridY = sPlayer.y;
+            player.move(move);
+            player.newPosition();
+          }
+        }
+      }
+      scene.ui.combatGrid.clear();
+    });
   //
   //////
   }
@@ -225,63 +236,63 @@ export class Player extends Mob {
 //update will call necessary functions for movement
 
   update(time, delta)
-{
+  {
 /**
  * A movement intention is set here if a cursor is held down. This will be
  * passed into the move function to determine which direction the player will
  * move. If no key is held down then moveIntention is false
  * Note: this movement system is only active when the player is not in combat.
  */
-  if(this.attemptMove === false)
-  {
-    if(this.state == false && !Number.isInteger(this.state))
+    if(this.attemptMove === false)
     {
-      if(this.cursors.left.isDown)
+      if(this.state == false && !Number.isInteger(this.state))
       {
-        this.attemptMove = true;
-        this.scene.socket.emit('moveAttempt', 'left');
+        if(this.cursors.left.isDown)
+        {
+          this.attemptMove = true;
+          this.scene.socket.emit('moveAttempt', 'left');
+        }
+        else if(this.cursors.right.isDown)
+        {
+          this.scene.socket.emit('moveAttempt', 'right');
+          this.attemptMove = true;
+        }
+        else if(this.cursors.up.isDown)
+        {
+          this.scene.socket.emit('moveAttempt', 'up');
+          this.attemptMove = true;
+        }
+        else if(this.cursors.down.isDown)
+        {
+          this.scene.socket.emit('moveAttempt', 'down');
+          this.attemptMove = true;
+        }
       }
-      else if(this.cursors.right.isDown)
+      else if(Number.isInteger(this.state))
       {
-        this.scene.socket.emit('moveAttempt', 'right');
-        this.attemptMove = true;
-      }
-      else if(this.cursors.up.isDown)
-      {
-        this.scene.socket.emit('moveAttempt', 'up');
-        this.attemptMove = true;
-      }
-      else if(this.cursors.down.isDown)
-      {
-        this.scene.socket.emit('moveAttempt', 'down');
-        this.attemptMove = true;
+        if(this.cursors.left.isDown)
+        {
+          this.scene.socket.emit('combatMove', 'left');
+          this.attemptMove = true;
+        }
+        else if(this.cursors.right.isDown)
+        {
+          this.scene.socket.emit('combatMove', 'right');
+          this.attemptMove = true;
+        }
+        else if(this.cursors.up.isDown)
+        {
+          this.scene.socket.emit('combatMove', 'up');
+          this.attemptMove = true;
+        }
+        else if(this.cursors.down.isDown)
+        {
+          this.scene.socket.emit('combatMove', 'down');
+          this.attemptMove = true;
+        }
       }
     }
-    else if(Number.isInteger(this.state))
-    {
-      if(this.cursors.left.isDown)
-      {
-        this.scene.socket.emit('combatMove', 'left');
-        this.attemptMove = true;
-      }
-      else if(this.cursors.right.isDown)
-      {
-        this.scene.socket.emit('combatMove', 'right');
-        this.attemptMove = true;
-      }
-      else if(this.cursors.up.isDown)
-      {
-        this.scene.socket.emit('combatMove', 'up');
-        this.attemptMove = true;
-      }
-      else if(this.cursors.down.isDown)
-      {
-        this.scene.socket.emit('combatMove', 'down');
-        this.attemptMove = true;
-      }
-    }
-  }
-  else if(!this.cursors.isDown && this.isMoving()) this.moveIntention = false;
-  super.update(time, delta);
+    else if(!this.cursors.isDown && this.isMoving()) this.moveIntention = false;
+    super.update(time, delta);
   }
 }

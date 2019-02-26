@@ -19,7 +19,7 @@ export class Mob extends Phaser.GameObjects.Sprite {
  * @param {integer} [y] - The y-coordinate in which the mob will be spawned
  * @param {object} [config] - Holds a variety of configuration objects listed below:
  *  - id
- *  - 
+ *  -
  *
  * @return {Phaser.GameObjects.Sprite.Mob}
  */
@@ -43,7 +43,7 @@ export class Mob extends Phaser.GameObjects.Sprite {
     this.scene.players[this.id] = this;
     this.cursors = this.scene.cursors;
     this.map = this.scene.map;
-    
+
     //Statistics calculations:
     //Primary statistics
     if(config.constitution != null) this.constitution = config.constitution;
@@ -51,7 +51,7 @@ export class Mob extends Phaser.GameObjects.Sprite {
     if(config.agility != null) this.agility = config.agility;
     else this.agility = 10;
     if(config.strength != null) this.strength = config.strength;
-    
+
     //Secondary statistics
     this.health = 90 + this.constitution;
 
@@ -61,10 +61,19 @@ export class Mob extends Phaser.GameObjects.Sprite {
     this.prevVel;  //previous velocity
     this.prevDest; //previous destination
     this.destination = this.body.position.clone(); //set when the mob is given a move order to a coordinate.
-    
+
     this.moveQueue = [];
     this.attemptMove = false;
-    
+
+    //COMBAT BLOCK
+    this.combat = {};
+    this.combat.initialPos = {x: this.x,   //Initial position of the player as the round started
+      y: this.y,
+      grid: { x: this.gridX,
+        y: this.gridY
+        }
+      };           
+
     //This weird block is to reset the sprite to the grid for some reason it doesn't even with the offsets.
     let currX = this.map.tileToWorldX(this.gridX);
     let currY = this.map.tileToWorldY(this.gridY);
@@ -72,7 +81,11 @@ export class Mob extends Phaser.GameObjects.Sprite {
 
     let requestBattle = (pointer) =>
     {
-      if(pointer.leftButtonDown()) this.scene.socket.emit('playerBattleRequest', { id: this.scene.socket.id, target: this.id });
+      console.log(pointer);
+      if(pointer.leftButtonDown())
+      {
+        this.scene.socket.emit('playerBattleRequest', { id: this.scene.socket.id, target: this.id });
+      }
     }
 
     this.openMobMenu = (pointer) =>
@@ -324,5 +337,17 @@ export class Mob extends Phaser.GameObjects.Sprite {
     this.destination.x = newX;
     this.destination.y = newY;
   }
+  newPosition()
+  {
+    this.combat.initialPos = {x: this.x, y: this.y,
+      grid: {x: this.gridX, y: this.gridY}
+    };
+  }
+  resetPosition()
+  {
+    this.setPosition(this.combat.initialPos.x, this.combat.initialPos.y);
+    this.gridX = this.combat.initialPos.grid.x;
+    this.gridY = this.combat.initialPos.grid.y;
+    this.setDestination(this.combat.initialPos.x, this.combat.initialPos.y);
+  } 
 }
-

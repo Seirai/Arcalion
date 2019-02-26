@@ -7,8 +7,8 @@
 
 import 'phaser';
 import io from 'socket.io-client';
-import { loadScene } from './scenes/loadScene';
-import { titleScene } from './scenes/titleScene';
+//import { loadScene } from './scenes/loadScene';
+//import { titleScene } from './scenes/titleScene';
 import { gameScene } from './scenes/gameScene';
 
 const gameConfig = {

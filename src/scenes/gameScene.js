@@ -20,31 +20,27 @@ export class gameScene extends Phaser.Scene {
 
   init()
   {
-//    this.game.renderer.resize(384, 384, 1.0);
     this.player;
     this.cursors;
     this.map;
     this.players = {};
     this.ui = {};
-    //this.anims = {};
-
-    //Scene functions: 
     this.createButton = function (scene, text) {
-         return scene.rexUI.add.label({
-             background: scene.rexUI.add.roundRectangle(0, 0, 100, 40, 20, 0x5e92f3),
- 
-             text: scene.add.text(0, 0, text, {
-                 fontSize: '24px'
-             }),
- 
-             space: {
-                 left: 10,
-                 right: 10,
-                 top: 10,
-                 bottom: 10
-             }
-         });
-     };
+     return scene.rexUI.add.label({
+         background: scene.rexUI.add.roundRectangle(0, 0, 100, 40, 20, 0x5e92f3),
+
+         text: scene.add.text(0, 0, text, {
+             fontSize: '24px'
+         }),
+
+         space: {
+             left: 10,
+             right: 10,
+             top: 10,
+             bottom: 10
+         }
+      });
+    };
   }
 
   //Loading assets.
@@ -153,17 +149,13 @@ export class gameScene extends Phaser.Scene {
     this.socket.on('playerMoved', data =>
     {
       let player = this.players[data.id];
-//        player.move(data.dir);
-      let worldpos = this.map.tileToWorldXY(data.pos.x, data.pos.y);
-      player.setPosition(worldpos.x, worldpos.y);
-      player.body.reset(worldpos.x, worldpos.y);
-//        player.move(data.dir);
-//        player.setDestination({x: worldpos.x, y: worldpos.y});
+      player.setDestination({grid: data.pos});
+      player.move(data.dir);
     });
 
     const camera = this.cameras.main;
     camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-
+    this.pointerText = this.add.text(0, 600, '', {fill: '#00ff00'}).setDepth(1);
   }
 
   //Checking for input and changes.
@@ -173,6 +165,15 @@ export class gameScene extends Phaser.Scene {
     {
       this.players[id].update();
     }
+    var pointer = this.input.activePointer;
+    this.pointerText.setText([
+      'x: ' + pointer.worldX,
+      'y: ' + pointer.worldY,
+      'isDown ' + pointer.isDown,
+      'rightButtonDown: ' + pointer.rightButtonDown(),
+      'leftButtonDown: ' + pointer.leftButtonDown()
+    ]);
+
   }
 };
 
